@@ -61,25 +61,14 @@ interface AppLayoutProps {
 
 export default function AppLayout({ children, activeNav = "product", onNavChange }: AppLayoutProps) {
   return (
-    <div className="flex h-screen w-full overflow-hidden" style={{ position: "relative" }}>
-
-      {/* ── Fixed background ─────────────────────────────────── */}
-      <div style={{
-        position: "fixed",
-        inset: 0,
-        backgroundImage: "url('/background.png')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        zIndex: 0,
-      }} />
+    <div className="flex h-screen w-full overflow-hidden">
 
       {/* ── Sidebar ──────────────────────────────────────────────
           mobile : icon-only (w-14)
           desktop: full with labels (w-56)                       */}
       <aside
         className="flex shrink-0 flex-col py-5 w-14 md:w-56"
-        style={{ backgroundColor: "#F4AE5E", position: "relative", zIndex: 1 }}
+        style={{ backgroundColor: "#F4AE5E" }}
       >
         {/* Brand — hidden on mobile */}
         <div className="mb-6 hidden md:block px-4">
@@ -125,7 +114,12 @@ export default function AppLayout({ children, activeNav = "product", onNavChange
       {/* ── Main content ─────────────────────────────────────── */}
       <main
         className="flex-1 overflow-y-auto"
-        style={{ position: "relative", zIndex: 1 }}
+        style={{
+          backgroundImage: "url('/background.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
       >
         {children}
       </main>

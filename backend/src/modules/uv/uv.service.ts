@@ -34,14 +34,14 @@ export function recommendEquipment(maxUV: number): {
   items: string[];
   warning?: string;
 } {
-  if (maxUV <= 2)  return { level: "UV 0–2",   items: ["No special equipment needed"] };
-  if (maxUV <= 26) return { level: "UV 20–26",  items: ["Sunglasses", "Hat"] };
+  if (maxUV <= 2)  return { level: "UV 0-2",   items: ["No special equipment needed"] };
+  if (maxUV <= 26) return { level: "UV 20-26",  items: ["Sunglasses", "Hat"] };
   if (maxUV <= 35) return {
-    level: "UV 27–35",
+    level: "UV 27-35",
     items: ["Wide-brimmed hat", "Sunglasses", "Long-sleeved UV-protective shirt", "Sunscreen SPF 30+"],
   };
   if (maxUV <= 49) return {
-    level: "UV 36–49",
+    level: "UV 36-49",
     items: ["UV-protective clothing", "Wide-brimmed hat", "Sunglasses", "Sunscreen SPF 50+", "UV umbrella"],
   };
   return {

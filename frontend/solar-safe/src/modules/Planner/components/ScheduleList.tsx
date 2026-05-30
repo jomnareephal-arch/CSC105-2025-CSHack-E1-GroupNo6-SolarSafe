@@ -21,7 +21,7 @@ export default function ScheduleList({ activities, onDelete, onUpdate }: Props) 
 
   if (activities.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-10 text-amber-400">
+      <div className="flex flex-col items-center justify-center py-10 text-orange-400">
         <svg className="w-10 h-10 mb-3 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <rect x="3" y="4" width="18" height="18" rx="2" strokeWidth={1.5} />
           <line x1="16" y1="2" x2="16" y2="6" strokeWidth={1.5} />
@@ -29,7 +29,7 @@ export default function ScheduleList({ activities, onDelete, onUpdate }: Props) 
           <line x1="3" y1="10" x2="21" y2="10" strokeWidth={1.5} />
           <line x1="8" y1="14" x2="16" y2="14" strokeWidth={1.5} />
         </svg>
-        <p className="text-sm font-semibold text-amber-600">No activities yet — add one above</p>
+        <p className="text-sm font-semibold text-orange-300">No activities yet — add one above</p>
       </div>
     );
   }
@@ -40,13 +40,13 @@ export default function ScheduleList({ activities, onDelete, onUpdate }: Props) 
         const badge = uvBadgeBg(act.peakUV);
         return (
           <div key={act.id}
-            className="bg-white/60 rounded-2xl px-3 md:px-4 py-3 border border-amber-100 shadow-sm"
+            className="bg-white rounded-2xl px-3 md:px-4 py-3 border border-amber-100 shadow-sm"
           >
             <div className="flex items-start gap-2 md:gap-3">
               {/* Time badge */}
               <div className="flex-shrink-0 bg-amber-600 text-white rounded-xl px-2 md:px-3 py-2 text-center min-w-[54px] md:min-w-[68px]">
                 <div className="text-[11px] font-bold">{String(act.startHour).padStart(2, "0")}:00</div>
-                <div className="text-[10px] opacity-70">–</div>
+                <div className="text-[10px] opacity-70">-</div>
                 <div className="text-[11px] font-bold">{String(act.endHour).padStart(2, "0")}:00</div>
               </div>
 

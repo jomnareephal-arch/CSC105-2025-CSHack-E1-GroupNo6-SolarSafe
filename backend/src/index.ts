@@ -1,30 +1,28 @@
-import express from "express";
-import cors from "cors";
-import { prisma } from "./db";
-import { errorHandler, notFoundHandler } from "./middlewares/errorHandler";
-import router from "./routers";
+import express from 'express'
+import cors from 'cors'
+import dotenv from "dotenv";
+import router from './routers.js'
+import { errorHandler } from './middlewares/error_handler.js'
+
+dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT ?? 3000;
+const PORT = process.env.PORT || 3000;
 
-// ─── Middleware ───────────────────────────────────────────────────────────────
-app.use(cors({ origin: "*" }));
-app.use(express.json());
+app.use(express.json())
+app.use(cors({ origin: 'http://localhost:5173', credentials: true }))
 
-// ─── Routes ───────────────────────────────────────────────────────────────────
-app.use("/api", router);
-
+app.get("/", (_req, res) => {
+  res.send("Backend is running");
+});
 app.get("/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-// ─── Error handling ───────────────────────────────────────────────────────────
-app.use(notFoundHandler);
-app.use(errorHandler);
+app.use("/api", router);
+app.use(errorHandler)
 
-// ─── Start ────────────────────────────────────────────────────────────────────
+
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
-
-export default app;

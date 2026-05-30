@@ -1,5 +1,5 @@
 import { useState } from "react";
-import AppLayout from "./components/Sidebar";
+import AppLayout from "./components/AppLayout";
 import PlannerPage from "./modules/Planner/pages/PlannerPage";
 
 function PlaceholderPage({ title }: { title: string }) {

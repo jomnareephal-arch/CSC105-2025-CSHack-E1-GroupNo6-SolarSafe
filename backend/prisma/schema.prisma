@@ -1,6 +1,8 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -40,4 +42,29 @@ model Activity {
   reason           String?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+}
+
+model Calculation {
+  id                 Int      @id @default(autoincrement())
+  skinType           String
+  outdoorTime        String
+  protectionItems    String   // JSON array
+  protectionScore    Float
+  safeOutdoorMinutes Float
+  remainingSeconds   Float?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+
+model Product {
+  id              Int      @id @default(autoincrement())
+  name            String
+  category        String
+  price           Int
+  protectionScore Int
+  imageUrl        String?
+  description     String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }

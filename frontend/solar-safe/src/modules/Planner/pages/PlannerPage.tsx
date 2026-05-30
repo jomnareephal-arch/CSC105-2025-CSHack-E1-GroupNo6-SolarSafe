@@ -101,12 +101,12 @@ export default function PlannerPage() {
             onChange={(e) => setActivityName(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleAdd()}
             placeholder="Activity name..."
-            className="flex-1 min-w-0 bg-white/80 border-2 border-amber-400 rounded-2xl px-4 md:px-5 py-2.5 md:py-3 text-amber-900 placeholder:text-amber-300 font-medium text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-amber-400 shadow-sm"
+            className="flex-1 min-w-0 bg-white/80 border-2 border-amber-400 rounded-2xl px-4 md:px-5 py-2.5 md:py-3 text-amber-900 placeholder:text-orange-300 font-medium text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-amber-400 shadow-sm"
           />
           <button
             onClick={handleAdd}
             disabled={loading || !activityName.trim()}
-            className="bg-amber-100 hover:bg-amber-200 disabled:opacity-40 text-amber-800 font-bold rounded-2xl px-4 md:px-7 py-2.5 md:py-3 border-2 border-amber-300 shadow text-sm md:text-base whitespace-nowrap transition-all active:scale-95"
+            className="bg-amber-100 hover:bg-amber-400 disabled:opacity-40 text-amber-800 font-bold rounded-2xl px-4 md:px-7 py-2.5 md:py-3 border-2 border-amber-500 shadow text-sm md:text-base whitespace-nowrap transition-all active:scale-95"
           >
             {loading ? "..." : "+ Add"}
           </button>
