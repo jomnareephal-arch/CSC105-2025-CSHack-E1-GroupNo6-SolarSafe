@@ -1,7 +1,7 @@
 import { useState } from "react";
 import AppLayout from "./components/AppLayout";
 import ProductRecommendPage from "./modules/ProductRecommend/pages/ProductRecommendPage";
-import CalculatePage from "./modules/calculate/CalculatePage";
+import CalculatePage from "./modules/calculate/pages/CalculatePage";
 
 export default function App() {
   const [activeNav, setActiveNav] = useState("product");
