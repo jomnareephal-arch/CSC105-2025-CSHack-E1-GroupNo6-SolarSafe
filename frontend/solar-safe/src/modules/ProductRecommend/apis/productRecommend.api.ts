@@ -1,26 +1,40 @@
 import type { Product, ProductCategory } from "../types/productRecommend.type";
 
-const ALL_PRODUCTS: Product[] = [
-  {
-    id: "hat-004",
-    name: "Classic Wide-Brim Straw",
-    category: "hats",
-    price: 180,
-    imageUrl: "/hat1.png",
-    rating: { standard: "UPF", value: 80, plus: true },
-    protectionScore: 100,
-  },
-];
+const BASE_URL = 'http://localhost:3000/api'
 
 export async function getProducts(category?: ProductCategory): Promise<Product[]> {
-  await new Promise((r) => setTimeout(r, 150));
-  if (category) return ALL_PRODUCTS.filter((p) => p.category === category);
-  return ALL_PRODUCTS;
+  const params = new URLSearchParams()
+  if (category) params.set('category', category)
+
+  const res = await fetch(`${BASE_URL}/product-recommendations?${params}`)
+  if (!res.ok) throw new Error('Failed to fetch products')
+  const data = await res.json()
+
+  // Map backend shape to frontend type
+  const raw: any[] = data.data ?? []
+  return raw
+    .filter((p: any) => p.active !== 0) // only active products
+    .map((p: any) => {
+      const cat = p.category as ProductCategory
+      const standard =
+        cat === 'sunscreen' ? 'SPF' :
+        (cat === 'hats' || cat === 'uv-jacket') ? 'UPF' : 'UV'
+      return {
+        id: String(p.id),
+        name: p.name,
+        category: cat,
+        price: p.price,
+        imageUrl: p.imageUrl ?? '',
+        description: p.description ?? undefined,
+        rating: { standard, value: p.protectionScore },
+        protectionScore: p.protectionScore,
+      } as Product
+    })
 }
 
 export async function getProductById(id: string): Promise<Product> {
-  await new Promise((r) => setTimeout(r, 150));
-  const product = ALL_PRODUCTS.find((p) => p.id === id);
-  if (!product) throw new Error(`Product not found: ${id}`);
-  return product;
+  const all = await getProducts()
+  const product = all.find(p => p.id === id)
+  if (!product) throw new Error('Product not found: ' + id)
+  return product
 }

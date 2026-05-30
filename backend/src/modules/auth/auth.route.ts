@@ -7,11 +7,11 @@ const router = Router()
 const JWT_SECRET = process.env.JWT_SECRET || 'solarsafe-secret-key'
 
 // ── Raw SQL helpers (User model was added after prisma generate) ──────────────
-type UserRow = { id: number; username: string; password: string }
+type UserRow = { id: number; username: string; password: string; role: string }
 
 async function findUserByUsername(username: string): Promise<UserRow | null> {
   const rows = await prisma.$queryRawUnsafe<UserRow[]>(
-    'SELECT id, username, password FROM "User" WHERE username = ? LIMIT 1',
+    'SELECT id, username, password, role FROM "User" WHERE username = ? LIMIT 1',
     username
   )
   return rows[0] ?? null
@@ -19,20 +19,21 @@ async function findUserByUsername(username: string): Promise<UserRow | null> {
 
 async function findUserById(id: number): Promise<UserRow | null> {
   const rows = await prisma.$queryRawUnsafe<UserRow[]>(
-    'SELECT id, username, password FROM "User" WHERE id = ? LIMIT 1',
+    'SELECT id, username, password, role FROM "User" WHERE id = ? LIMIT 1',
     id
   )
   return rows[0] ?? null
 }
 
-async function createUser(username: string, hashedPassword: string): Promise<UserRow> {
+async function createUser(username: string, hashedPassword: string, role: string): Promise<UserRow> {
   await prisma.$executeRawUnsafe(
-    'INSERT INTO "User" (username, password, createdAt, updatedAt) VALUES (?, ?, datetime(\'now\'), datetime(\'now\'))',
+    'INSERT INTO "User" (username, password, role, createdAt, updatedAt) VALUES (?, ?, ?, datetime(\'now\'), datetime(\'now\'))',
     username,
-    hashedPassword
+    hashedPassword,
+    role
   )
   const rows = await prisma.$queryRawUnsafe<UserRow[]>(
-    'SELECT id, username, password FROM "User" WHERE username = ? LIMIT 1',
+    'SELECT id, username, password, role FROM "User" WHERE username = ? LIMIT 1',
     username
   )
   return rows[0]
@@ -54,18 +55,29 @@ export function authMiddleware(req: Request, res: Response, next: Function) {
     return
   }
   try {
-    const payload = jwt.verify(token, JWT_SECRET) as { userId: number; username: string }
+    const payload = jwt.verify(token, JWT_SECRET) as { userId: number; username: string; role: string }
     ;(req as any).userId = payload.userId
     ;(req as any).username = payload.username
+    ;(req as any).role = payload.role
     next()
   } catch {
     res.status(401).json({ error: 'Invalid token' })
   }
 }
 
+export function adminMiddleware(req: Request, res: Response, next: Function) {
+  authMiddleware(req, res, () => {
+    if ((req as any).role !== 'admin') {
+      res.status(403).json({ error: 'Admin access required' })
+      return
+    }
+    next()
+  })
+}
+
 // ── POST /api/auth/signup ─────────────────────────────────────────────────────
 router.post('/signup', async (req: Request, res: Response) => {
-  const { username, password } = req.body
+  const { username, password, role } = req.body
   if (!username || !password) {
     res.status(400).json({ error: 'Username and password are required' })
     return
@@ -74,6 +86,7 @@ router.post('/signup', async (req: Request, res: Response) => {
     res.status(400).json({ error: 'Password must be at least 6 characters' })
     return
   }
+  const userRole = role === 'admin' ? 'admin' : 'user'
   try {
     const existing = await findUserByUsername(username)
     if (existing) {
@@ -81,9 +94,9 @@ router.post('/signup', async (req: Request, res: Response) => {
       return
     }
     const hashed = await bcrypt.hash(password, 10)
-    const user = await createUser(username, hashed)
-    const token = jwt.sign({ userId: user.id, username: user.username }, JWT_SECRET, { expiresIn: '7d' })
-    res.status(201).json({ token, username: user.username })
+    const user = await createUser(username, hashed, userRole)
+    const token = jwt.sign({ userId: user.id, username: user.username, role: user.role }, JWT_SECRET, { expiresIn: '7d' })
+    res.status(201).json({ token, username: user.username, role: user.role })
   } catch (err: any) {
     res.status(500).json({ error: err.message })
   }
@@ -107,8 +120,8 @@ router.post('/signin', async (req: Request, res: Response) => {
       res.status(401).json({ error: 'Invalid username or password' })
       return
     }
-    const token = jwt.sign({ userId: user.id, username: user.username }, JWT_SECRET, { expiresIn: '7d' })
-    res.json({ token, username: user.username })
+    const token = jwt.sign({ userId: user.id, username: user.username, role: user.role }, JWT_SECRET, { expiresIn: '7d' })
+    res.json({ token, username: user.username, role: user.role })
   } catch (err: any) {
     res.status(500).json({ error: err.message })
   }

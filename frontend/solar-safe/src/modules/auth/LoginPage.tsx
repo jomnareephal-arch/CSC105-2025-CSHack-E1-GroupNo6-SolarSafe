@@ -56,7 +56,7 @@ export default function LoginPage({ onGoSignup }: Props) {
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error || 'Login failed'); return }
-      login(data.token, data.username)
+      login(data.token, data.username, data.role ?? 'user')
     } catch {
       setError('Cannot connect to server')
     } finally {

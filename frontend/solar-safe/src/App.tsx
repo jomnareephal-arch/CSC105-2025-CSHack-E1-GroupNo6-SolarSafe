@@ -6,12 +6,13 @@ import LoginPage from "./modules/auth/LoginPage";
 import SignupPage from "./modules/auth/SignupPage";
 import SettingPage from "./modules/auth/SettingPage";
 import PlannerPage from "./modules/Planner/pages/PlannerPage";
+import AdminPage from "./modules/Admin/pages/AdminPage";
 import { useAuth } from "./contexts/AuthContext";
 
 type AuthScreen = "login" | "signup";
 
 export default function App() {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, isAdmin } = useAuth();
   const [activeNav, setActiveNav] = useState("product");
   const [authScreen, setAuthScreen] = useState<AuthScreen>("login");
 
@@ -28,6 +29,7 @@ export default function App() {
       {activeNav === "product"   && <ProductRecommendPage />}
       {activeNav === "planner"   && <PlannerPage />}
       {activeNav === "calculate" && <CalculatePage />}
+      {activeNav === "admin"     && isAdmin && <AdminPage />}
       {activeNav === "setting"   && <SettingPage />}
     </AppLayout>
   );

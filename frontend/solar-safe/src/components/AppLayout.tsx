@@ -5,6 +5,7 @@ const NAV_ITEMS = [
   {
     id: "product",
     label: "Product Recommendation",
+    adminOnly: false,
     icon: (
       <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" strokeLinejoin="round"/>
@@ -16,6 +17,7 @@ const NAV_ITEMS = [
   {
     id: "planner",
     label: "Planner",
+    adminOnly: false,
     icon: (
       <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <rect x="3" y="4" width="18" height="18" rx="2"/>
@@ -28,6 +30,7 @@ const NAV_ITEMS = [
   {
     id: "calculate",
     label: "Sun Safety Calculate",
+    adminOnly: false,
     icon: (
       <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <circle cx="12" cy="12" r="5"/>
@@ -43,8 +46,19 @@ const NAV_ITEMS = [
     ),
   },
   {
+    id: "admin",
+    label: "Admin",
+    adminOnly: true,
+    icon: (
+      <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+    ),
+  },
+  {
     id: "setting",
     label: "Setting",
+    adminOnly: false,
     icon: (
       <svg className="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <circle cx="12" cy="12" r="3"/>
@@ -61,13 +75,14 @@ interface AppLayoutProps {
 }
 
 export default function AppLayout({ children, activeNav = "product", onNavChange }: AppLayoutProps) {
-  const { username } = useAuth();
+  const { username, isAdmin } = useAuth();
+
+  const visibleItems = NAV_ITEMS.filter(item => !item.adminOnly || isAdmin);
+
   return (
     <div className="flex h-screen w-full overflow-hidden">
 
-      {/* ── Sidebar ──────────────────────────────────────────────
-          mobile : icon-only (w-14)
-          desktop: full with labels (w-56)                       */}
+      {/* ── Sidebar ── */}
       <aside
         className="flex shrink-0 flex-col py-5 w-14 md:w-56"
         style={{ backgroundColor: "#F4AE5E" }}
@@ -75,17 +90,19 @@ export default function AppLayout({ children, activeNav = "product", onNavChange
         {/* Brand — hidden on mobile */}
         <div className="mb-6 hidden md:block px-4">
           <p className="text-xl font-bold leading-tight" style={{ color: "#5F2900" }}>SolarSafe</p>
-          <p className="text-sm truncate" style={{ color: "#5F2900" }}>👋 {username}</p>
+          <p className="text-sm truncate" style={{ color: "#5F2900" }}>
+            👋 {username}{isAdmin && <span className="ml-1 text-xs font-bold opacity-70">[Admin]</span>}
+          </p>
         </div>
 
-        {/* Mobile brand — just initials */}
+        {/* Mobile brand */}
         <div className="mb-4 flex justify-center md:hidden">
           <span className="text-lg font-bold" style={{ color: "#5F2900" }}>SS</span>
         </div>
 
         {/* Navigation */}
         <nav className="flex flex-col gap-1 px-1 md:px-2">
-          {NAV_ITEMS.map((item) => {
+          {visibleItems.map((item) => {
             const isActive = item.id === activeNav;
             return (
               <button
@@ -103,7 +120,6 @@ export default function AppLayout({ children, activeNav = "product", onNavChange
                 }
               >
                 {item.icon}
-                {/* Label — hidden on mobile */}
                 <span className="hidden md:block text-xs font-medium leading-tight">
                   {item.label}
                 </span>
@@ -113,7 +129,7 @@ export default function AppLayout({ children, activeNav = "product", onNavChange
         </nav>
       </aside>
 
-      {/* ── Main content ─────────────────────────────────────── */}
+      {/* ── Main content ── */}
       <main
         className="flex-1 overflow-y-auto"
         style={{

@@ -4,6 +4,7 @@ import calculationRouter from './modules/calculate/calculate.router.js'
 import configRouter from './modules/calculate/config.router.js'
 import plannerRouter from "./modules/planner/routers/planner.router.js";
 import authRouter from './modules/auth/auth.route.js'
+import adminRouter from './modules/admin/admin.route.js'
 import { prisma } from "./db.js";
 
 const router = Router();
@@ -14,6 +15,7 @@ router.use('/calculation', calculationRouter)
 router.use('/config', configRouter)
 
 router.use("/product-recommendations", productRecommendRouter);
+router.use("/admin", adminRouter);
 
 // ── In-memory loadout store ───────────────────────────────────────────────────
 // { [userId]: productId[] }
