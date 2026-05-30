@@ -1,5 +1,25 @@
-import AppRouter from './routers'
+import { useState } from "react";
+import AppLayout from "./components/AppLayout";
+import ProductRecommendPage from "./modules/ProductRecommend/pages/ProductRecommendPage";
+import CalculatePage from "./modules/calculate/CalculatePage";
 
 export default function App() {
-  return <AppRouter />
+  const [activeNav, setActiveNav] = useState("product");
+
+  return (
+    <AppLayout activeNav={activeNav} onNavChange={setActiveNav}>
+      {activeNav === "product"   && <ProductRecommendPage />}
+      {activeNav === "planner"   && (
+        <div className="flex h-full items-center justify-center text-gray-500">
+          Planner — Coming soon
+        </div>
+      )}
+      {activeNav === "calculate" && <CalculatePage />}
+      {activeNav === "setting"   && (
+        <div className="flex h-full items-center justify-center text-gray-500">
+          Setting — Coming soon
+        </div>
+      )}
+    </AppLayout>
+  );
 }
