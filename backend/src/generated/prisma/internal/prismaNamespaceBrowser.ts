@@ -51,7 +51,11 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
+  Day: 'Day',
+  UVData: 'UVData',
+  Activity: 'Activity',
   Calculation: 'Calculation',
+  User: 'User',
   Product: 'Product'
 } as const
 
@@ -68,6 +72,41 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
+export const DayScalarFieldEnum = {
+  id: 'id',
+  date: 'date',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DayScalarFieldEnum = (typeof DayScalarFieldEnum)[keyof typeof DayScalarFieldEnum]
+
+
+export const UVDataScalarFieldEnum = {
+  id: 'id',
+  hour: 'hour',
+  uvIndex: 'uvIndex',
+  level: 'level',
+  dayId: 'dayId'
+} as const
+
+export type UVDataScalarFieldEnum = (typeof UVDataScalarFieldEnum)[keyof typeof UVDataScalarFieldEnum]
+
+
+export const ActivityScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  dayId: 'dayId',
+  recommendedStart: 'recommendedStart',
+  recommendedEnd: 'recommendedEnd',
+  reason: 'reason',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ActivityScalarFieldEnum = (typeof ActivityScalarFieldEnum)[keyof typeof ActivityScalarFieldEnum]
+
+
 export const CalculationScalarFieldEnum = {
   id: 'id',
   skinType: 'skinType',
@@ -81,6 +120,18 @@ export const CalculationScalarFieldEnum = {
 } as const
 
 export type CalculationScalarFieldEnum = (typeof CalculationScalarFieldEnum)[keyof typeof CalculationScalarFieldEnum]
+
+
+export const UserScalarFieldEnum = {
+  id: 'id',
+  username: 'username',
+  password: 'password',
+  role: 'role',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
 export const ProductScalarFieldEnum = {

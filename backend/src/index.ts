@@ -15,6 +15,9 @@ app.use(cors({ origin: 'http://localhost:5173', credentials: true }))
 app.get("/", (_req, res) => {
   res.send("Backend is running");
 });
+app.get("/health", (_req, res) => {
+  res.json({ status: "ok", timestamp: new Date().toISOString() });
+});
 
 app.use("/api", router);
 app.use(errorHandler)

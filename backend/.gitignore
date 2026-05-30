@@ -9,8 +9,8 @@ node_modules/
 # prisma database
 prisma/dev.db
 prisma/dev.db-journal
-backend/dev.db
-backend/dev.db-journal
+dev.db
+dev.db-journal
 
 # build files
 dist/

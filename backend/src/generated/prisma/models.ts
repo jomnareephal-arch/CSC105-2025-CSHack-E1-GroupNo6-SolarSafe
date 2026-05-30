@@ -8,6 +8,10 @@
  *
  * 🟢 You can import this file directly.
  */
+export type * from './models/Day.js'
+export type * from './models/UVData.js'
+export type * from './models/Activity.js'
 export type * from './models/Calculation.js'
+export type * from './models/User.js'
 export type * from './models/Product.js'
 export type * from './commonInputTypes.js'

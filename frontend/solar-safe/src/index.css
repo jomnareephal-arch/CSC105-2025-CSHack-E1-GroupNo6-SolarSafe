@@ -35,3 +35,4 @@ input[type="range"]::-webkit-slider-runnable-track {
   border-radius: 9999px;
   background: #e5e7eb;
 }
+.fade-up { animation: fadeUp 0.3s ease both; }

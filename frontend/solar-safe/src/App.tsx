@@ -5,6 +5,7 @@ import CalculatePage from "./modules/calculate/pages/CalculatePage";
 import LoginPage from "./modules/auth/LoginPage";
 import SignupPage from "./modules/auth/SignupPage";
 import SettingPage from "./modules/auth/SettingPage";
+import PlannerPage from "./modules/Planner/pages/PlannerPage";
 import { useAuth } from "./contexts/AuthContext";
 
 type AuthScreen = "login" | "signup";
@@ -25,11 +26,7 @@ export default function App() {
   return (
     <AppLayout activeNav={activeNav} onNavChange={setActiveNav}>
       {activeNav === "product"   && <ProductRecommendPage />}
-      {activeNav === "planner"   && (
-        <div className="flex h-full items-center justify-center text-gray-500">
-          Planner — Coming soon
-        </div>
-      )}
+      {activeNav === "planner"   && <PlannerPage />}
       {activeNav === "calculate" && <CalculatePage />}
       {activeNav === "setting"   && <SettingPage />}
     </AppLayout>

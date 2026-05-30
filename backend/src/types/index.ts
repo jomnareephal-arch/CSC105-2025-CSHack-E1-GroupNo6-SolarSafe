@@ -3,6 +3,36 @@ export type TimeSlot =
   | '06:00' | '07:00' | '08:00' | '09:00' | '10:00' | '11:00'
   | '12:00' | '13:00' | '14:00' | '15:00' | '16:00' | '17:00'
 
+  export interface UVDataPoint {
+  hour: number;      // 0-23
+  uvIndex: number;
+  level: UVLevel;
+}
+
+export interface Activity {
+  id: string;
+  name: string;
+  dayId: string;
+  recommendedStart?: number; // hour 0-23
+  recommendedEnd?: number;   // hour 0-23
+  reason?: string;
+  createdAt: string;
+}
+
+export interface Day {
+  id: string;        // YYYY-MM-DD
+  date: string;
+  uvData: UVDataPoint[];
+  activities: Activity[];
+}
+
+export interface ProtectiveEquipment {
+  maxUV: number;
+  level: string;
+  items: string[];
+  warning?: string;
+}
+
 export interface ProtectionComponent {
   type: string
   spf?: number

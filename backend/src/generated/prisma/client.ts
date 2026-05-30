@@ -31,8 +31,8 @@ export * from "./enums.js"
  * const prisma = new PrismaClient({
  *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
  * })
- * // Fetch zero or more Calculations
- * const calculations = await prisma.calculation.findMany()
+ * // Fetch zero or more Days
+ * const days = await prisma.day.findMany()
  * ```
  * 
  * Read more in our [docs](https://pris.ly/d/client).
@@ -42,10 +42,30 @@ export type PrismaClient<LogOpts extends Prisma.LogLevel = never, OmitOpts exten
 export { Prisma }
 
 /**
+ * Model Day
+ * 
+ */
+export type Day = Prisma.DayModel
+/**
+ * Model UVData
+ * 
+ */
+export type UVData = Prisma.UVDataModel
+/**
+ * Model Activity
+ * 
+ */
+export type Activity = Prisma.ActivityModel
+/**
  * Model Calculation
  * 
  */
 export type Calculation = Prisma.CalculationModel
+/**
+ * Model User
+ * 
+ */
+export type User = Prisma.UserModel
 /**
  * Model Product
  * 
