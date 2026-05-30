@@ -15,15 +15,20 @@ const BADGE_COLOR: Record<RatingStandard, string> = {
 interface ProductCardProps {
   product: Product;
   onAdd: (product: Product) => void;
+  onRemove?: (product: Product) => void;
 }
 
-export default function ProductCard({ product, onAdd }: ProductCardProps) {
+export default function ProductCard({ product, onAdd, onRemove }: ProductCardProps) {
   const [added, setAdded] = useState(false);
 
   const handleAdd = () => {
-    if (added) return;
-    setAdded(true);
-    onAdd(product);
+    if (added) {
+      setAdded(false);
+      onRemove?.(product);
+    } else {
+      setAdded(true);
+      onAdd(product);
+    }
   };
 
   return (
@@ -74,13 +79,12 @@ export default function ProductCard({ product, onAdd }: ProductCardProps) {
         <button
           type="button"
           onClick={handleAdd}
-          disabled={added}
-          aria-label={`Add ${product.name} to loadout`}
+          aria-label={added ? `Remove ${product.name} from loadout` : `Add ${product.name} to loadout`}
           className="flex items-center justify-center rounded-full text-white shadow transition-all active:scale-95
                      h-8 w-8 text-lg sm:h-9 sm:w-9 sm:text-xl"
           style={{
-            backgroundColor: added ? "#c8b0a0" : "#E68C52",
-            cursor: added ? "default" : "pointer",
+            backgroundColor: added ? "#7a9e6e" : "#E68C52",
+            cursor: "pointer",
           }}
         >
           {added ? "✓" : "+"}
