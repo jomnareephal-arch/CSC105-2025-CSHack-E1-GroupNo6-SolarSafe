@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useAuth } from "../contexts/AuthContext";
 
 const NAV_ITEMS = [
   {
@@ -60,6 +61,7 @@ interface AppLayoutProps {
 }
 
 export default function AppLayout({ children, activeNav = "product", onNavChange }: AppLayoutProps) {
+  const { username } = useAuth();
   return (
     <div className="flex h-screen w-full overflow-hidden">
 
@@ -73,7 +75,7 @@ export default function AppLayout({ children, activeNav = "product", onNavChange
         {/* Brand — hidden on mobile */}
         <div className="mb-6 hidden md:block px-4">
           <p className="text-xl font-bold leading-tight" style={{ color: "#5F2900" }}>SolarSafe</p>
-          <p className="text-sm" style={{ color: "#5F2900" }}>Welcome</p>
+          <p className="text-sm truncate" style={{ color: "#5F2900" }}>👋 {username}</p>
         </div>
 
         {/* Mobile brand — just initials */}

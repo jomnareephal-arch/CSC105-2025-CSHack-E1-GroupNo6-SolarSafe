@@ -57,6 +57,15 @@ model Calculation {
 }
 
 
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  role      String   @default("user")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Product {
   id              Int      @id @default(autoincrement())
   name            String

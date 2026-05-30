@@ -55,6 +55,7 @@ export const ModelName = {
   UVData: 'UVData',
   Activity: 'Activity',
   Calculation: 'Calculation',
+  User: 'User',
   Product: 'Product'
 } as const
 
@@ -119,6 +120,18 @@ export const CalculationScalarFieldEnum = {
 } as const
 
 export type CalculationScalarFieldEnum = (typeof CalculationScalarFieldEnum)[keyof typeof CalculationScalarFieldEnum]
+
+
+export const UserScalarFieldEnum = {
+  id: 'id',
+  username: 'username',
+  password: 'password',
+  role: 'role',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
 export const ProductScalarFieldEnum = {

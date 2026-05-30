@@ -62,6 +62,11 @@ export type Activity = Prisma.ActivityModel
  */
 export type Calculation = Prisma.CalculationModel
 /**
+ * Model User
+ * 
+ */
+export type User = Prisma.UserModel
+/**
  * Model Product
  * 
  */
