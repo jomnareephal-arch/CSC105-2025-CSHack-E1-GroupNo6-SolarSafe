@@ -1,6 +1,6 @@
 import { useState } from "react";
 import AppLayout from "./components/AppLayout";
-import ProductRecommendPage from "./module/ProductRecommend/pages/ProductRecommendPage";
+import ProductRecommendPage from "./modules/ProductRecommend/pages/ProductRecommendPage";
 
 export default function App() {
   const [activeNav, setActiveNav] = useState("product");
