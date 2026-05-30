@@ -1,0 +1,20 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Calculation {
+  id                 Int      @id @default(autoincrement())
+  skinType           String
+  outdoorTime        String
+  protectionItems    String   // JSON array
+  protectionScore    Float
+  safeOutdoorMinutes Float
+  remainingSeconds   Float?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
