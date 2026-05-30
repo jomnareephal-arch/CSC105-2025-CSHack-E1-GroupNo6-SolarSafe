@@ -72,13 +72,13 @@ export default function AppLayout({ children, activeNav = "product", onNavChange
       >
         {/* Brand — hidden on mobile */}
         <div className="mb-6 hidden md:block px-4">
-          <p className="text-xl font-bold leading-tight" style={{ color: "#5F2900" }}>AppName</p>
+          <p className="text-xl font-bold leading-tight" style={{ color: "#5F2900" }}>SolarSafe</p>
           <p className="text-sm" style={{ color: "#5F2900" }}>Welcome</p>
         </div>
 
         {/* Mobile brand — just initials */}
         <div className="mb-4 flex justify-center md:hidden">
-          <span className="text-lg font-bold" style={{ color: "#5F2900" }}>A</span>
+          <span className="text-lg font-bold" style={{ color: "#5F2900" }}>SS</span>
         </div>
 
         {/* Navigation */}
