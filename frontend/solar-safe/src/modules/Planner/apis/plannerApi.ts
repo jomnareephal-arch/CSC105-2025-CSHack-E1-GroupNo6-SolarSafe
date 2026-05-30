@@ -1,27 +1,9 @@
 import axios from "axios";
+import type { UVHour, Activity, ProtectiveEquipment } from "../types";
 
-const api = axios.create({ baseURL: "http://localhost:3001/api" });
+export type { UVHour, Activity, ProtectiveEquipment };
 
-export interface UVHour {
-  hour: number;
-  uv: number;
-  level: "night" | "low" | "moderate" | "high" | "vhigh";
-}
-
-export interface Activity {
-  id: string;
-  name: string;
-  startHour: number;
-  endHour: number;
-  reason: string;
-  peakUV: number;
-}
-
-export interface ProtectiveEquipment {
-  level: string;
-  items: string[];
-  warning?: string;
-}
+const api = axios.create({ baseURL: "http://localhost:3000/api" });
 
 export const plannerApi = {
   getUVToday: () =>

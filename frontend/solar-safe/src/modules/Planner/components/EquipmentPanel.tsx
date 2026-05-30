@@ -1,16 +1,19 @@
-import type { ProtectiveEquipment } from "../../api/plannerApi";
+import type { ProtectiveEquipment } from "../apis/plannerApi";
 
 const EQUIPMENT_ICONS: Record<string, string> = {
   "Sunglasses": "🕶️",
-"Hat": "🧢",
-"Wide-brimmed hat": "👒",
-"Long-sleeved UV protection shirt": "👕",
-"Sunscreen SPF 30+": "🧴",
-"Sunscreen SPF 50+": "🧴",
-"UV protection clothing": "👗",
-"UV umbrella": "☂️",
-"All types of protective equipment": "🛡️",
-"No special equipment needed": "✅",
+  "Hat": "🧢",
+  "Wide-brimmed hat": "👒",
+  "Long-sleeved UV-protective shirt": "👕",
+  "Long-sleeved UV protection shirt": "👕",
+  "Sunscreen SPF 30+": "🧴",
+  "Sunscreen SPF 50+": "🧴",
+  "UV-protective clothing": "👗",
+  "UV protection clothing": "👗",
+  "UV umbrella": "☂️",
+  "UV-protective umbrella": "☂️",
+  "All types of protective equipment": "🛡️",
+  "No special equipment needed": "✅",
 };
 
 interface Props {
@@ -34,7 +37,7 @@ export default function EquipmentPanel({ equipment, hasActivities }: Props) {
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2">
-        <span className="text-sm font-bold text-amber-900">ระดับ UV สูงสุด:</span>
+        <span className="text-sm font-bold text-amber-900">Maximum UV level:</span>
         <span className="bg-amber-600 text-white text-xs font-bold rounded-full px-3 py-0.5">
           {equipment.level}
         </span>
