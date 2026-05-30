@@ -23,18 +23,8 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 // ─── Start ────────────────────────────────────────────────────────────────────
-async function main() {
-  await prisma.$connect();
-  console.log("✅ Database connected");
-  app.listen(PORT, () => {
-    console.log(`🌞 Solar Safe API → http://localhost:${PORT}`);
-  });
-}
-
-main().catch(async (err) => {
-  console.error(err);
-  await prisma.$disconnect();
-  process.exit(1);
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
 
 export default app;
