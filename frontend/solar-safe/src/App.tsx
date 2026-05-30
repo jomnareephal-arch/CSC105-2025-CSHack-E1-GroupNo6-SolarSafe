@@ -1,6 +1,7 @@
 import { useState } from "react";
 import AppLayout from "./components/AppLayout";
 import ProductRecommendPage from "./modules/ProductRecommend/pages/ProductRecommendPage";
+import CalculatePage from "./modules/calculate/CalculatePage";
 
 export default function App() {
   const [activeNav, setActiveNav] = useState("product");
@@ -13,11 +14,7 @@ export default function App() {
           Planner — Coming soon
         </div>
       )}
-      {activeNav === "calculate" && (
-        <div className="flex h-full items-center justify-center text-gray-500">
-          Sun Safety Calculate — Coming soon
-        </div>
-      )}
+      {activeNav === "calculate" && <CalculatePage />}
       {activeNav === "setting"   && (
         <div className="flex h-full items-center justify-center text-gray-500">
           Setting — Coming soon
