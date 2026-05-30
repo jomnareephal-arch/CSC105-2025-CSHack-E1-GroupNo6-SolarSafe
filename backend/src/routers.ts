@@ -2,10 +2,12 @@ import { Router } from "express";
 import productRecommendRouter from "./modules/productRecommend/productRecommend.route.js";
 import calculationRouter from './modules/calculate/calculate.router.js'
 import configRouter from './modules/calculate/config.router.js'
+import authRouter from './modules/auth/auth.route.js'
 import { prisma } from "./db.js";
 
 const router = Router();
 
+router.use('/auth', authRouter)
 router.use('/calculation', calculationRouter)
 router.use('/config', configRouter)
 
