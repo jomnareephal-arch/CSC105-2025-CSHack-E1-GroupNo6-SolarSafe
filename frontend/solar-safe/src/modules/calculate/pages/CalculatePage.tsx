@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import backgroundImg from '../../../assets/background.png'
 import { fetchProtectionConfig, createCalculation, updateCalculation } from '../apis/calculate.api'
 import type { SkinType, TimeSlot, ProtectionItemType, ProtectionConfigItem, ProtectionComponent } from '../types/calculate.types'
 import SkinTypeSelector from '../components/SkinTypeSelector'
@@ -123,21 +122,18 @@ export default function CalculatePage() {
   function selectNone() { setNoneSelected(true); setSelectedValues(new Map()) }
 
   return (
-    <div
-      className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex flex-col items-center justify-start p-5 gap-3"
-      style={{ backgroundImage: `url(${backgroundImg})` }}
-    >
+    <div className="min-h-screen p-4 md:p-10">
       {notif && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-red-700 text-white px-6 py-3 rounded-2xl font-bold shadow-2xl text-sm">
           {notif}
         </div>
       )}
 
-      <h1 className="text-3xl font-extrabold text-amber-900 drop-shadow-md tracking-tight mt-2">
-        ☀️ Sun Safety Calculate ✨
+      <h1 className="text-3xl md:text-5xl font-bold text-amber-950 mb-5 md:mb-7">
+        Sun Safety Calculate
       </h1>
 
-      <div className="w-full max-w-215 grid grid-cols-2 gap-5 items-start max-[620px]:grid-cols-1">
+      <div className="grid grid-cols-2 gap-5 items-start max-[620px]:grid-cols-1">
         <SkinTypeSelector value={skinType} onChange={setSkinType} />
 
         <section className="flex flex-col gap-3">
