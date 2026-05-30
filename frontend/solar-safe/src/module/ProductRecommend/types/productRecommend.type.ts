@@ -17,13 +17,15 @@ export interface CategoryTab {
 }
 
 // ----- Protection Rating -----
-// Gear (hats/umbrella/jacket) uses UPF; sunscreen uses SPF.
-export type RatingStandard = "UPF" | "SPF";
+// hats / uv-jacket  → UPF
+// sunscreen         → SPF
+// umbrella / sunglasses → UV
+export type RatingStandard = "UPF" | "SPF" | "UV";
 
 export interface ProtectionRating {
-  standard: RatingStandard; // "UPF" or "SPF"
-  value: number; // e.g. 50
-  plus?: boolean; // true => render as "50+" (e.g. "UPF 50+")
+  standard: RatingStandard; // "UPF" | "SPF" | "UV"
+  value: number;            // e.g. 50
+  plus?: boolean;           // true → render as "50+" (e.g. "UPF 50+")
 }
 
 // ----- Product -----
@@ -32,10 +34,10 @@ export interface Product {
   id: string;
   name: string;
   category: ProductCategory;
-  price: number; // Baht (฿)
+  price: number;            // Baht (฿)
   imageUrl: string;
-  rating: ProtectionRating; // UPF or SPF badge
-  protectionScore: number; // 0–100, drives the protection slider/score
+  rating: ProtectionRating; // UPF | SPF | UV badge
+  protectionScore: number;  // 50–120, matches filter slider range
   description?: string;
 }
 
@@ -45,9 +47,9 @@ export type PriceRangeId = "under-100" | "100-300" | "above-300";
 
 export interface PriceRangeOption {
   id: PriceRangeId;
-  label: string; // e.g. "100 - 300 Baht"
+  label: string;       // e.g. "100 - 300 Baht"
   min: number;
-  max: number | null; // null = no upper bound ("Above 300 Baht")
+  max: number | null;  // null = no upper bound ("Above 300 Baht")
 }
 
 // ----- Filter state -----
@@ -55,7 +57,7 @@ export interface PriceRangeOption {
 export interface ProductFilter {
   category: ProductCategory; // active category tab
   priceRanges: PriceRangeId[]; // checked price boxes
-  minProtectionScore: number; // slider value, 0 (BASIC) – 100 (MAX)
+  minProtectionScore: number;  // slider value, 50–120 step 10
 }
 
 // ----- Protection Loadout (Member 2's shared state) -----

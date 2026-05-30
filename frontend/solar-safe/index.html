@@ -4,7 +4,21 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>solar-safe</title>
+    <title>SolarSafe</title>
+    <!-- Tailwind CSS CDN — ใช้ได้เลยโดยไม่ต้อง npm install -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              sidebar: '#7C4D2F',
+              'sidebar-active': 'rgba(0,0,0,0.25)',
+            }
+          }
+        }
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
