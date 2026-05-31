@@ -139,7 +139,7 @@ export default function PlannerPage() {
       <section className="pb-8">
         <h2 className="text-sm md:text-base font-bold text-amber-900 mb-3">Recommended protective equipment</h2>
         <div className="bg-white/50 border border-amber-300 rounded-2xl px-3 md:px-5 py-4 min-h-[140px] shadow-sm">
-          <EquipmentPanel equipment={equipment} hasActivities={activities.length > 0} />
+          <EquipmentPanel equipment={equipment} hasActivities={activities.length > 0} activities={activities} />
         </div>
       </section>
     </div>

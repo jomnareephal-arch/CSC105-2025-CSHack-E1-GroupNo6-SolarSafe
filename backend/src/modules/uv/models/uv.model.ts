@@ -31,7 +31,7 @@ export function recommendEquipment(maxUV: number): {
   warning?: string;
 } {
   if (maxUV <= 2)  return { level: "UV 0-2",   items: ["No special equipment needed"] };
-  if (maxUV <= 26) return { level: "UV 20-26",  items: ["Sunglasses", "Hat"] };
+  if (maxUV <= 26) return { level: "UV 3-26",   items: ["Sunglasses", "Hat"] };
   if (maxUV <= 35) return {
     level: "UV 27-35",
     items: ["Wide-brimmed hat", "Sunglasses", "Long-sleeved UV-protective shirt", "Sunscreen SPF 30+"],

@@ -9,10 +9,11 @@ interface Props {
 
 function uvBadgeBg(uv: number): { bg: string; color: string } {
   if (uv === 0)  return { bg: "#dcfce7", color: "#166534" };
-  if (uv <= 26)  return { bg: "#fef9c3", color: "#713f12" };
-  if (uv <= 35)  return { bg: "#ffedd5", color: "#7c2d12" };
-  if (uv <= 49)  return { bg: "#fee2e2", color: "#b91c1c" };
-  return { bg: "#7f1d1d", color: "#fff" };
+  if (uv <= 10)  return { bg: "#dcfce7", color: "#166534" };
+  if (uv <= 20)  return { bg: "#fef9c3", color: "#713f12" };
+  if (uv <= 30)  return { bg: "#ffedd5", color: "#7c2d12" };
+  if (uv <= 40)  return { bg: "#fee2e2", color: "#b91c1c" };
+  return { bg: "#9333ea", color: "#fff" };
 }
 
 export default function ScheduleList({ activities, onDelete, onUpdate }: Props) {

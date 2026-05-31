@@ -56,11 +56,11 @@ router.put('/uv/:date', adminMiddleware, async (req: Request, res: Response) => 
   }
 
   function uvLevel(uv: number): string {
-    if (uv === 0) return 'none'
-    if (uv <= 10) return 'low'
-    if (uv <= 20) return 'moderate'
-    if (uv <= 30) return 'high'
-    if (uv <= 40) return 'very_high'
+    if (uv === 0)  return 'none'
+    if (uv <= 26)  return 'low'
+    if (uv <= 35)  return 'moderate'
+    if (uv <= 49)  return 'high'
+    if (uv <= 70)  return 'very_high'
     return 'extreme'
   }
 
