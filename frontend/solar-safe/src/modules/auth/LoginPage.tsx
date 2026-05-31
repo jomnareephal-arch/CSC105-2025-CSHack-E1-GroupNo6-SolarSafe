@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 
-const BASE_URL = 'http://localhost:3000/api'
+const BASE_URL = '/api'
 
 interface Props {
   onGoSignup: () => void

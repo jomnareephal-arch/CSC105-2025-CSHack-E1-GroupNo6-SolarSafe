@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 
-const BASE_URL = 'http://localhost:3000/api'
+const BASE_URL = '/api'
 
 const PersonIcon = () => (
   <svg className="w-5 h-5 text-gray-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

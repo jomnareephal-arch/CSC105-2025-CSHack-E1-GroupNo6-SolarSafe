@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '../../../contexts/AuthContext'
 
-const BASE_URL = 'http://localhost:3000/api'
+const BASE_URL = '/api'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface Product {
@@ -29,14 +29,6 @@ function getScoreLabel(category: string) {
 
 const HOURS = Array.from({ length: 13 }, (_, i) => i + 6) // 6..18
 
-function uvLevel(uv: number): string {
-  if (uv === 0) return 'none'
-  if (uv <= 2) return 'low'
-  if (uv <= 5) return 'moderate'
-  if (uv <= 7) return 'high'
-  if (uv <= 10) return 'very_high'
-  return 'extreme'
-}
 
 function uvColor(uv: number): string {
   if (uv <= 10) return '#22C55E'
@@ -143,8 +135,8 @@ export default function AdminPage() {
       })
       const data = await res.json()
       if (data.url) {
-        setForm(f => ({ ...f, imageUrl: `http://localhost:3000${data.url}` }))
-        setImagePreview(`http://localhost:3000${data.url}`)
+        setForm(f => ({ ...f, imageUrl: `${data.url}` }))
+        setImagePreview(`${data.url}`)
       }
     } catch {
       setFormError('Image upload failed')

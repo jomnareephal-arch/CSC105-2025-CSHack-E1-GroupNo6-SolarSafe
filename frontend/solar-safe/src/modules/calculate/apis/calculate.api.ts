@@ -1,6 +1,6 @@
 import type { CalcResult, CalculationPayload } from '../types/calculate.types'
 
-const BASE_URL = 'http://localhost:3000/api'
+const BASE_URL = '/api'
 
 export async function fetchProtectionConfig() {
   const res = await fetch(`${BASE_URL}/config/protection`)

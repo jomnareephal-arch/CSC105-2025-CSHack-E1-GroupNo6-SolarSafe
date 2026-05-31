@@ -1,6 +1,6 @@
 import type { Product, ProductCategory } from "../types/productRecommend.type";
 
-const BASE_URL = 'http://localhost:3000/api'
+const BASE_URL = '/api'
 
 export async function getProducts(category?: ProductCategory): Promise<Product[]> {
   const params = new URLSearchParams()
