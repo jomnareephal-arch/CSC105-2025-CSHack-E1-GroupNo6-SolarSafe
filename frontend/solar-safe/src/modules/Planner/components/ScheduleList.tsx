@@ -7,6 +7,19 @@ interface Props {
   onUpdate: (id: string, name: string) => void;
 }
 
+function endTimeLabel(startHour: number, durationMinutes: number): string {
+  const totalMins = startHour * 60 + durationMinutes;
+  const h = Math.floor(totalMins / 60);
+  const m = totalMins % 60;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+}
+
+function durationLabel(mins: number): string {
+  if (mins < 60) return `${mins} min`;
+  if (mins === 60) return "1 hr";
+  return `${mins / 60} hr`;
+}
+
 function uvBadgeBg(uv: number): { bg: string; color: string } {
   if (uv === 0)  return { bg: "#dcfce7", color: "#166534" };
   if (uv <= 10)  return { bg: "#dcfce7", color: "#166534" };
@@ -47,8 +60,9 @@ export default function ScheduleList({ activities, onDelete, onUpdate }: Props) 
               {/* Time badge */}
               <div className="flex-shrink-0 bg-amber-600 text-white rounded-xl px-2 md:px-3 py-2 text-center min-w-[54px] md:min-w-[68px]">
                 <div className="text-[11px] font-bold">{String(act.startHour).padStart(2, "0")}:00</div>
-                <div className="text-[10px] opacity-70">-</div>
-                <div className="text-[11px] font-bold">{String(act.endHour).padStart(2, "0")}:00</div>
+                <div className="text-[10px] opacity-70">–</div>
+                <div className="text-[11px] font-bold">{endTimeLabel(act.startHour, act.durationMinutes)}</div>
+                <div className="text-[9px] opacity-60 mt-0.5">{durationLabel(act.durationMinutes)}</div>
               </div>
 
               {/* Name + reason */}

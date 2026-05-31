@@ -31,6 +31,7 @@ function applyFilters(products: Product[], filter: ProductFilter): Product[] {
 interface ProductRecommendPageProps {
   selectedProducts: Map<ProductCategory, Product>;
   onSelectProduct: (product: Product) => void;
+  onUnselectProduct: (category: ProductCategory) => void;
   initialCategory?: ProductCategory;
   returnToCalculate?: boolean;
   onDone?: () => void;
@@ -39,6 +40,7 @@ interface ProductRecommendPageProps {
 export default function ProductRecommendPage({
   selectedProducts,
   onSelectProduct,
+  onUnselectProduct,
   initialCategory,
   returnToCalculate = false,
   onDone,
@@ -90,22 +92,26 @@ export default function ProductRecommendPage({
     onSelectProduct(product);
   }, [onSelectProduct]);
 
+  const handleUnselect = useCallback((product: Product) => {
+    onUnselectProduct(product.category);
+  }, [onUnselectProduct]);
+
   const selectedInCurrentCategory = selectedProducts.get(filter.category);
 
   return (
-    <div className="min-h-full p-6">
+    <div className="min-h-screen p-4 md:p-8">
       {/* Header */}
-      <div className="mb-5 flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-800">
+      <div className="mb-5 flex items-center justify-between gap-3">
+        <h1 className="text-3xl md:text-4xl font-bold text-amber-950">
           Product Recommendation
         </h1>
-        {returnToCalculate && onDone && (
+        {selectedProducts.size > 0 && onDone && (
           <button
             onClick={onDone}
-            className="rounded-xl px-4 py-2 text-sm font-semibold text-white shadow transition-all active:scale-95"
+            className="shrink-0 rounded-xl px-4 py-2 text-sm font-semibold text-white shadow transition-all active:scale-95"
             style={{ backgroundColor: "#E68C52" }}
           >
-            ← Back to Calculate
+            {returnToCalculate ? "← Back to Calculate" : "Proceed to Calculate →"}
           </button>
         )}
       </div>
@@ -131,7 +137,16 @@ export default function ProductRecommendPage({
                 >
                   <span>{tab.label}:</span>
                   {sel ? (
-                    <span className="font-semibold line-clamp-1 max-w-[120px]">{sel.name}</span>
+                    <>
+                      <span className="font-semibold line-clamp-1 max-w-[120px]">{sel.name}</span>
+                      <button
+                        onClick={() => onUnselectProduct(tab.value)}
+                        className="ml-0.5 flex items-center justify-center w-4 h-4 rounded-full hover:bg-orange-200 transition-colors"
+                        title={`Remove ${tab.label}`}
+                      >
+                        ✕
+                      </button>
+                    </>
                   ) : (
                     <span className="italic">Not selected</span>
                   )}
@@ -174,10 +189,19 @@ export default function ProductRecommendPage({
                     <li key={tab.value} className="flex flex-col">
                       <span className="text-[10px] font-bold uppercase text-gray-400">{tab.label}</span>
                       {sel ? (
-                        <>
-                          <span className="text-xs text-gray-700 font-medium line-clamp-1">{sel.name}</span>
-                          <span className="text-xs text-orange-600 font-bold">{sel.price} ฿</span>
-                        </>
+                        <div className="flex items-start justify-between gap-1">
+                          <div className="min-w-0">
+                            <span className="text-xs text-gray-700 font-medium line-clamp-1 block">{sel.name}</span>
+                            <span className="text-xs text-orange-600 font-bold">{sel.price} ฿</span>
+                          </div>
+                          <button
+                            onClick={() => onUnselectProduct(tab.value)}
+                            className="shrink-0 text-[10px] text-gray-400 hover:text-red-500 transition-colors mt-0.5"
+                            title={`Remove ${tab.label}`}
+                          >
+                            ✕
+                          </button>
+                        </div>
                       ) : (
                         <span className="text-xs text-gray-400 italic">Not selected</span>
                       )}
@@ -205,6 +229,7 @@ export default function ProductRecommendPage({
             products={visibleProducts}
             selectedProductId={selectedInCurrentCategory?.id}
             onSelect={handleSelect}
+            onUnselect={handleUnselect}
             loading={loading}
           />
         </div>

@@ -9,6 +9,7 @@ import PlannerPage from "./modules/Planner/pages/PlannerPage";
 import AdminPage from "./modules/Admin/pages/AdminPage";
 import { useAuth } from "./contexts/AuthContext";
 import type { Product, ProductCategory } from "./modules/ProductRecommend/types/productRecommend.type";
+import type { SkinType, TimeSlot } from "./modules/calculate/types/calculate.types";
 
 type AuthScreen = "login" | "signup";
 
@@ -23,10 +24,23 @@ export default function App() {
   const [productPageInitialCategory, setProductPageInitialCategory] = useState<ProductCategory | null>(null);
   const [returnToCalculate, setReturnToCalculate] = useState(false);
 
+  // Calculate page state — lifted so it survives navigation away and back
+  const [calcSkinType,     setCalcSkinType]     = useState<SkinType | null>(null);
+  const [calcTimeSlot,     setCalcTimeSlot]     = useState<TimeSlot | null>(null);
+  const [calcNoneSelected, setCalcNoneSelected] = useState(false);
+
   const handleSelectProduct = (product: Product) => {
     setSelectedProducts(prev => {
       const next = new Map(prev);
       next.set(product.category, product);
+      return next;
+    });
+  };
+
+  const handleUnselectProduct = (category: ProductCategory) => {
+    setSelectedProducts(prev => {
+      const next = new Map(prev);
+      next.delete(category);
       return next;
     });
   };
@@ -65,6 +79,7 @@ export default function App() {
         <ProductRecommendPage
           selectedProducts={selectedProducts}
           onSelectProduct={handleSelectProduct}
+          onUnselectProduct={handleUnselectProduct}
           initialCategory={productPageInitialCategory ?? undefined}
           returnToCalculate={returnToCalculate}
           onDone={handleDoneSelectingProduct}
@@ -76,6 +91,12 @@ export default function App() {
           selectedProducts={selectedProducts}
           onNavigateToProductForCategory={handleNavigateToProductForCategory}
           onClearSelectedProducts={handleClearSelectedProducts}
+          skinType={calcSkinType}
+          onSkinTypeChange={setCalcSkinType}
+          timeSlot={calcTimeSlot}
+          onTimeSlotChange={setCalcTimeSlot}
+          noneSelected={calcNoneSelected}
+          onNoneSelectedChange={setCalcNoneSelected}
         />
       )}
       {activeNav === "admin"     && isAdmin && <AdminPage />}

@@ -11,13 +11,22 @@ const BADGE_COLOR: Record<RatingStandard, string> = {
   UV:  "#f97316",
 };
 
+const CATEGORY_EMOJI: Record<string, string> = {
+  hats:        "🧢",
+  sunglasses:  "🕶️",
+  sunscreen:   "🧴",
+  umbrella:    "☂️",
+  "uv-jacket": "🧥",
+};
+
 interface ProductCardProps {
   product: Product;
   isSelected: boolean;
   onSelect: (product: Product) => void;
+  onUnselect: (product: Product) => void;
 }
 
-export default function ProductCard({ product, isSelected, onSelect }: ProductCardProps) {
+export default function ProductCard({ product, isSelected, onSelect, onUnselect }: ProductCardProps) {
   return (
     <div
       className="flex flex-col rounded-2xl bg-white shadow-sm transition-shadow hover:shadow-md p-2 sm:p-3"
@@ -28,12 +37,21 @@ export default function ProductCard({ product, isSelected, onSelect }: ProductCa
         className="relative mb-2 sm:mb-3 overflow-hidden rounded-xl"
         style={{ backgroundColor: "#f7f4f1" }}
       >
-        <img
-          src={product.imageUrl}
-          alt={product.name}
-          className="aspect-square w-full object-cover"
-          loading="lazy"
-        />
+        {product.imageUrl ? (
+          <img
+            src={product.imageUrl}
+            alt={product.name}
+            className="aspect-square w-full object-cover"
+            loading="lazy"
+            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; (e.currentTarget.nextElementSibling as HTMLElement | null)?.removeAttribute("hidden"); }}
+          />
+        ) : null}
+        <div
+          className="aspect-square w-full flex items-center justify-center text-5xl"
+          style={{ backgroundColor: "#f7f4f1", display: product.imageUrl ? "none" : "flex" }}
+        >
+          {CATEGORY_EMOJI[product.category] ?? "📦"}
+        </div>
         <span
           className="absolute right-1.5 top-1.5 rounded-full px-1.5 py-0.5
                      text-[10px] font-semibold text-white
@@ -62,11 +80,16 @@ export default function ProductCard({ product, isSelected, onSelect }: ProductCa
 
         <button
           type="button"
-          onClick={() => onSelect(product)}
-          className="rounded-full text-white text-xs font-semibold px-3 py-1.5 shadow transition-all active:scale-95"
-          style={{ backgroundColor: isSelected ? "#7a9e6e" : "#E68C52", cursor: "pointer" }}
+          onClick={() => isSelected ? onUnselect(product) : onSelect(product)}
+          className="rounded-full text-xs font-semibold px-3 py-1.5 shadow transition-all active:scale-95"
+          style={{
+            backgroundColor: isSelected ? "#f3f4f6" : "#E68C52",
+            color: isSelected ? "#dc2626" : "#fff",
+            border: isSelected ? "1px solid #fca5a5" : "none",
+            cursor: "pointer",
+          }}
         >
-          {isSelected ? "✓ Selected" : "Select"}
+          {isSelected ? "✕ Remove" : "Select"}
         </button>
       </div>
     </div>

@@ -3,26 +3,62 @@ import { useAuth } from '../../contexts/AuthContext'
 
 const BASE_URL = '/api'
 
-const PersonIcon = () => (
-  <svg className="w-5 h-5 text-gray-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <circle cx="12" cy="8" r="4"/>
-    <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-  </svg>
-)
+function EyeIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+      <circle cx="12" cy="12" r="3"/>
+    </svg>
+  )
+}
+
+function EyeOffIcon() {
+  return (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
+      <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
+      <line x1="1" y1="1" x2="23" y2="23"/>
+    </svg>
+  )
+}
+
+function PasswordInput({ value, onChange, placeholder }: {
+  value: string
+  onChange: (v: string) => void
+  placeholder: string
+}) {
+  const [show, setShow] = useState(false)
+  return (
+    <div className="flex items-center gap-2 border-2 border-amber-200 rounded-xl px-3 py-2.5 bg-white/80 focus-within:border-amber-500 transition-colors">
+      <input
+        type={show ? 'text' : 'password'}
+        placeholder={placeholder}
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        className="flex-1 outline-none text-sm text-amber-900 bg-transparent placeholder:text-amber-300"
+        required
+      />
+      <button type="button" onClick={() => setShow(v => !v)} className="text-amber-400 hover:text-amber-700 transition-colors shrink-0">
+        {show ? <EyeOffIcon /> : <EyeIcon />}
+      </button>
+    </div>
+  )
+}
 
 export default function SettingPage() {
-  const { username, token, logout } = useAuth()
+  const { username, token, logout, role } = useAuth()
   const [currentPassword, setCurrentPassword] = useState('')
-  const [newPassword, setNewPassword] = useState('')
+  const [newPassword,     setNewPassword]     = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [error, setError] = useState('')
+  const [error,   setError]   = useState('')
   const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
 
+  const initials = (username ?? '?').slice(0, 2).toUpperCase()
+
   async function handleChangePassword(e: React.FormEvent) {
     e.preventDefault()
-    setError('')
-    setSuccess('')
+    setError(''); setSuccess('')
     if (newPassword !== confirmPassword) { setError('New passwords do not match'); return }
     setLoading(true)
     try {
@@ -34,9 +70,7 @@ export default function SettingPage() {
       const data = await res.json()
       if (!res.ok) { setError(data.error || 'Failed to change password'); return }
       setSuccess('Password changed successfully!')
-      setCurrentPassword('')
-      setNewPassword('')
-      setConfirmPassword('')
+      setCurrentPassword(''); setNewPassword(''); setConfirmPassword('')
     } catch {
       setError('Cannot connect to server')
     } finally {
@@ -45,85 +79,89 @@ export default function SettingPage() {
   }
 
   return (
-    <div className="flex min-h-full items-center justify-center p-4 sm:p-8">
-      <div className="bg-white rounded-3xl shadow-xl
-                      w-full max-w-sm sm:max-w-md md:max-w-lg
-                      px-6 py-8 sm:px-10 sm:py-10
-                      flex flex-col gap-6">
+    <div className="min-h-screen p-4 md:p-8">
+      <h1 className="text-3xl md:text-4xl font-bold text-amber-950 mb-5 md:mb-6">Settings</h1>
 
-        {/* Account section */}
-        <div>
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Account</h2>
-          <label className="text-sm font-semibold text-gray-600 mb-1.5 block">Username</label>
-          <div className="flex items-center border border-gray-200 rounded-2xl px-4 py-3 gap-3 bg-gray-50">
-            <PersonIcon />
-            <span className="text-sm text-gray-700">{username}</span>
+      <div className="flex flex-col gap-4 max-w-lg mx-auto">
+
+        {/* ── Profile card ───────────────────────────────────────── */}
+        <div className="bg-white/70 border-2 border-amber-200 rounded-2xl p-5 shadow-sm">
+          <p className="text-xs font-bold uppercase tracking-widest text-amber-500 mb-4">Account</p>
+          <div className="flex items-center gap-4">
+            {/* Avatar */}
+            <div
+              className="w-14 h-14 rounded-2xl flex items-center justify-center text-white text-xl font-extrabold shrink-0 shadow"
+              style={{ backgroundColor: '#E8884A' }}
+            >
+              {initials}
+            </div>
+            <div>
+              <p className="text-lg font-bold text-amber-950 leading-tight">{username}</p>
+              <span
+                className="inline-block mt-1 text-[11px] font-semibold px-2.5 py-0.5 rounded-full"
+                style={
+                  role === 'admin'
+                    ? { backgroundColor: '#fef3c7', color: '#92400e', border: '1px solid #fcd34d' }
+                    : { backgroundColor: '#f0fdf4', color: '#166534', border: '1px solid #86efac' }
+                }
+              >
+                {role === 'admin' ? '🛡 Admin' : '👤 User'}
+              </span>
+            </div>
           </div>
         </div>
 
-        <hr className="border-gray-100" />
-
-        {/* Change password section */}
-        <div>
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Change Password</h2>
-          <form onSubmit={handleChangePassword} className="flex flex-col gap-4">
+        {/* ── Change password card ────────────────────────────────── */}
+        <div className="bg-white/70 border-2 border-amber-200 rounded-2xl p-5 shadow-sm">
+          <p className="text-xs font-bold uppercase tracking-widest text-amber-500 mb-4">Change Password</p>
+          <form onSubmit={handleChangePassword} className="flex flex-col gap-3">
             <div>
-              <label className="text-sm font-semibold text-gray-600 mb-1.5 block">Current Password</label>
-              <input
-                type="password"
-                placeholder="Enter current password"
-                value={currentPassword}
-                onChange={e => setCurrentPassword(e.target.value)}
-                className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-orange-400 transition-colors"
-                required
-              />
+              <label className="text-xs font-semibold text-amber-800 mb-1 block">Current Password</label>
+              <PasswordInput value={currentPassword} onChange={setCurrentPassword} placeholder="Enter current password" />
             </div>
             <div>
-              <label className="text-sm font-semibold text-gray-600 mb-1.5 block">New Password</label>
-              <input
-                type="password"
-                placeholder="Enter new password"
-                value={newPassword}
-                onChange={e => setNewPassword(e.target.value)}
-                className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-orange-400 transition-colors"
-                required
-              />
+              <label className="text-xs font-semibold text-amber-800 mb-1 block">New Password</label>
+              <PasswordInput value={newPassword} onChange={setNewPassword} placeholder="At least 6 characters" />
             </div>
             <div>
-              <label className="text-sm font-semibold text-gray-600 mb-1.5 block">Confirm New Password</label>
-              <input
-                type="password"
-                placeholder="Repeat new password"
-                value={confirmPassword}
-                onChange={e => setConfirmPassword(e.target.value)}
-                className="w-full border border-gray-200 rounded-2xl px-4 py-3 text-sm outline-none focus:border-orange-400 transition-colors"
-                required
-              />
+              <label className="text-xs font-semibold text-amber-800 mb-1 block">Confirm New Password</label>
+              <PasswordInput value={confirmPassword} onChange={setConfirmPassword} placeholder="Repeat new password" />
             </div>
 
-            {error && <p className="text-red-500 text-sm">{error}</p>}
-            {success && <p className="text-green-600 text-sm">{success}</p>}
+            {error   && (
+              <p className="text-xs font-semibold text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2">
+                ⚠️ {error}
+              </p>
+            )}
+            {success && (
+              <p className="text-xs font-semibold text-green-700 bg-green-50 border border-green-200 rounded-xl px-3 py-2">
+                ✓ {success}
+              </p>
+            )}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 rounded-2xl text-white font-bold text-base hover:opacity-90 transition-opacity"
+              className="mt-1 w-full py-3 rounded-xl text-white font-bold text-sm hover:opacity-90 active:scale-95 transition-all disabled:opacity-50"
               style={{ backgroundColor: '#E8884A' }}
             >
-              {loading ? 'Saving…' : 'Change Password'}
+              {loading ? 'Saving…' : 'Update Password'}
             </button>
           </form>
         </div>
 
-        <hr className="border-gray-100" />
+        {/* ── Sign out card ───────────────────────────────────────── */}
+        <div className="bg-white/70 border-2 border-red-100 rounded-2xl p-5 shadow-sm">
+          <p className="text-xs font-bold uppercase tracking-widest text-red-400 mb-1">Danger Zone</p>
+          <p className="text-xs text-gray-400 mb-4">You will be logged out and need to sign in again.</p>
+          <button
+            onClick={logout}
+            className="w-full py-3 rounded-xl font-bold text-sm border-2 border-red-300 text-red-600 bg-red-50 hover:bg-red-100 active:scale-95 transition-all"
+          >
+            Sign Out
+          </button>
+        </div>
 
-        <button
-          onClick={logout}
-          className="w-full py-3.5 rounded-2xl text-white font-bold text-base hover:opacity-90 transition-opacity"
-          style={{ backgroundColor: '#E8884A' }}
-        >
-          Sign out
-        </button>
       </div>
     </div>
   )

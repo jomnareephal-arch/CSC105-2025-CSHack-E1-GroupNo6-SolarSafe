@@ -12,9 +12,7 @@ export async function getProducts(category?: ProductCategory): Promise<Product[]
 
   // Map backend shape to frontend type
   const raw: any[] = data.data ?? []
-  return raw
-    .filter((p: any) => p.active !== 0) // only active products
-    .map((p: any) => {
+  return raw.map((p: any) => {
       const cat = p.category as ProductCategory
       const standard =
         cat === 'sunscreen' ? 'SPF' :

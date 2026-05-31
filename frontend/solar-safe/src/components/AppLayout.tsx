@@ -89,7 +89,7 @@ export default function AppLayout({ children, activeNav = "product", onNavChange
       >
         {/* Brand — hidden on mobile */}
         <div className="mb-6 hidden md:block px-4">
-          <p className="text-xl font-bold leading-tight" style={{ color: "#5F2900" }}>SolarSafe</p>
+          <img src="/logo.png" alt="SolarSafe" className="w-16 h-16 object-contain mb-1 rounded-xl" />
           <p className="text-sm truncate" style={{ color: "#5F2900" }}>
             👋 {username}{isAdmin && <span className="ml-1 text-xs font-bold opacity-70">[Admin]</span>}
           </p>
@@ -97,7 +97,7 @@ export default function AppLayout({ children, activeNav = "product", onNavChange
 
         {/* Mobile brand */}
         <div className="mb-4 flex justify-center md:hidden">
-          <span className="text-lg font-bold" style={{ color: "#5F2900" }}>SS</span>
+          <img src="/logo.png" alt="SolarSafe" className="w-9 h-9 object-contain rounded-lg" />
         </div>
 
         {/* Navigation */}

@@ -1,6 +1,6 @@
 import { prisma } from "../../../db";
 import { generateUVData, recommendEquipment } from "../../uv/models/uv.model";
-import { scheduleActivity } from "../planner.service";
+import { scheduleActivity, generateReason } from "../planner.service";
 import type { UVDataPoint } from "../../uv/types/uv.types";
 import type { ActivityRow, UVRow, DayWithData, ActivityResponse, EquipmentResponse } from "../types/planner.types";
 
@@ -69,11 +69,13 @@ export function peakUVForActivity(uvData: UVRow[], start: number | null, end: nu
 export function formatActivity(act: ActivityRow, uvData: UVRow[]): ActivityResponse {
   const startHour = act.recommendedStart ?? 0;
   const endHour = act.recommendedEnd ?? startHour + 1;
+  const durationMinutes = act.durationMinutes ?? (endHour - startHour) * 60;
   return {
     id: act.id,
     name: act.name,
     startHour,
     endHour,
+    durationMinutes,
     reason: act.reason ?? "",
     peakUV: peakUVForActivity(uvData, act.recommendedStart, act.recommendedEnd),
   };
@@ -103,18 +105,41 @@ export function buildEquipment(day: DayWithData): EquipmentResponse {
 
 // ─── DB operations ────────────────────────────────────────────────────────────
 
-export async function createActivity(dayId: string, name: string, excludeId?: string) {
+export async function createActivity(
+  dayId: string,
+  name: string,
+  options?: { startHour?: number; durationMinutes?: number }
+) {
   const day = await getOrCreateDay(dayId);
-  const usedHours = buildUsedHours(day.activities, excludeId);
-  const uvPoints = toUVPoints(day.uvData);
-  const { start, end, reason } = scheduleActivity(name, uvPoints, usedHours);
+  const dur = options?.durationMinutes ?? 60;
+
+  let start: number, end: number, reason: string;
+
+  if (options?.startHour !== undefined) {
+    start = options.startHour;
+    end = start + Math.max(1, Math.ceil(dur / 60));
+    const uvPoint = day.uvData.find((d) => d.hour === start);
+    const uvIndex = uvPoint?.uvIndex ?? 0;
+    const level   = uvPoint?.level   ?? "low";
+    reason = generateReason(name, start, uvIndex, level, false);
+  } else {
+    const usedHours = buildUsedHours(day.activities);
+    const uvPoints = toUVPoints(day.uvData);
+    const scheduled = scheduleActivity(name, uvPoints, usedHours);
+    start  = scheduled.start;
+    end    = scheduled.end;
+    reason = scheduled.reason;
+  }
 
   const created = await prisma.activity.create({
-    data: { name, dayId, recommendedStart: start, recommendedEnd: end, reason },
+    data: { name, dayId, recommendedStart: start, recommendedEnd: end, durationMinutes: dur, reason },
   });
 
   const updatedDay = await getOrCreateDay(dayId);
-  return { activity: formatActivity(created, day.uvData), equipment: buildEquipment(updatedDay) };
+  return {
+    activity: formatActivity(created, day.uvData),
+    equipment: buildEquipment(updatedDay),
+  };
 }
 
 export async function updateActivity(dayId: string, activityId: string, name: string) {

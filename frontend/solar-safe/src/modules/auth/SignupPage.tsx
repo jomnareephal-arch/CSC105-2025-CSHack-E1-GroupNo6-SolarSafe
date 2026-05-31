@@ -41,7 +41,6 @@ export default function SignupPage({ onGoLogin }: Props) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [role, setRole] = useState<'user' | 'admin'>('user')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -55,7 +54,7 @@ export default function SignupPage({ onGoLogin }: Props) {
       const res = await fetch(`${BASE_URL}/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password, role }),
+        body: JSON.stringify({ username, password }),
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error || 'Sign up failed'); return }
@@ -74,7 +73,7 @@ export default function SignupPage({ onGoLogin }: Props) {
                       px-6 py-10 sm:px-10 sm:py-12">
 
         {/* Logo */}
-        <div className="w-20 h-20 rounded-full shrink-0" style={{ backgroundColor: '#E8884A' }} />
+        <img src="/logo.png" alt="SolarSafe" className="w-20 h-20 object-contain shrink-0 rounded-2xl" />
 
         <div className="text-center">
           <h1 className="text-3xl font-bold" style={{ color: '#1a1a1a' }}>Solar Safe</h1>
@@ -130,28 +129,6 @@ export default function SignupPage({ onGoLogin }: Props) {
                 className="flex-1 outline-none text-sm text-gray-700 bg-transparent"
                 required
               />
-            </div>
-          </div>
-
-          {/* Role selector */}
-          <div>
-            <label className="text-sm font-semibold text-gray-700 mb-2 block">Account Type</label>
-            <div className="flex gap-3">
-              {(['user', 'admin'] as const).map(r => (
-                <button
-                  key={r}
-                  type="button"
-                  onClick={() => setRole(r)}
-                  className="flex-1 py-2.5 rounded-2xl text-sm font-semibold border-2 transition-all"
-                  style={
-                    role === r
-                      ? { backgroundColor: '#E8884A', borderColor: '#E8884A', color: '#fff' }
-                      : { backgroundColor: 'transparent', borderColor: '#E5E7EB', color: '#6B7280' }
-                  }
-                >
-                  {r === 'user' ? '👤 User' : '🛡 Admin'}
-                </button>
-              ))}
             </div>
           </div>
 

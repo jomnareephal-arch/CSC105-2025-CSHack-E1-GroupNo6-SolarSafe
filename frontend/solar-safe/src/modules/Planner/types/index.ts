@@ -11,6 +11,7 @@ export interface Activity {
   name: string;
   startHour: number;
   endHour: number;
+  durationMinutes: number;
   reason: string;
   peakUV: number;
 }

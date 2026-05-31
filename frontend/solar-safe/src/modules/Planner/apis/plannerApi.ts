@@ -16,9 +16,13 @@ export const plannerApi = {
       )
       .then((r) => r.data),
 
-  addActivity: (name: string) =>
+  addActivity: (name: string, startHour?: number, durationMinutes?: number) =>
     api
-      .post<{ activity: Activity; equipment: ProtectiveEquipment }>("/planner/activities", { name })
+      .post<{ activity: Activity; equipment: ProtectiveEquipment }>("/planner/activities", {
+        name,
+        ...(startHour       !== undefined && { startHour }),
+        ...(durationMinutes !== undefined && { durationMinutes }),
+      })
       .then((r) => r.data),
 
   deleteActivity: (id: string) =>

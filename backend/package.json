@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
-    "build": "tsc"
+    "build": "tsc",
+    "seed": "tsx src/seed.ts"
   },
   "dependencies": {
     "@libsql/client": "^0.17.3",

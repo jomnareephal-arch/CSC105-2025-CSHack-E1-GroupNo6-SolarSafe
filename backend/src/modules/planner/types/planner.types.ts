@@ -4,6 +4,7 @@ export interface ActivityRow {
   recommendedStart: number | null;
   recommendedEnd: number | null;
   reason: string | null;
+  durationMinutes: number | null;
 }
 
 export interface UVRow {
@@ -22,6 +23,7 @@ export interface ActivityResponse {
   name: string;
   startHour: number;
   endHour: number;
+  durationMinutes: number;
   reason: string;
   peakUV: number;
 }

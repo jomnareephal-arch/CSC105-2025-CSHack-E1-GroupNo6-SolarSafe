@@ -71,7 +71,7 @@ export default function LoginPage({ onGoSignup }: Props) {
                       px-6 py-10 sm:px-10 sm:py-12">
 
         {/* Logo */}
-        <div className="w-20 h-20 rounded-full shrink-0" style={{ backgroundColor: '#E8884A' }} />
+        <img src="/logo.png" alt="SolarSafe" className="w-20 h-20 object-contain shrink-0 rounded-2xl" />
 
         <div className="text-center">
           <h1 className="text-3xl font-bold" style={{ color: '#1a1a1a' }}>Solar Safe</h1>

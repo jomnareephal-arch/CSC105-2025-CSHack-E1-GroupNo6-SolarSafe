@@ -222,8 +222,8 @@ export default function AdminPage() {
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <div className="p-4 md:p-8 max-w-6xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6" style={{ color: '#5F2900' }}>Admin Dashboard</h1>
+    <div className="min-h-screen p-4 md:p-8">
+      <h1 className="text-3xl md:text-4xl font-bold text-amber-950 mb-5 md:mb-6">Admin Dashboard</h1>
 
       {/* ══ UV Index Section ══════════════════════════════════════════════════ */}
       <section className="bg-white rounded-2xl shadow p-6 mb-8">

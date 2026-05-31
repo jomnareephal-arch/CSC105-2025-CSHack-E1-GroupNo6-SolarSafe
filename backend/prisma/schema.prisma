@@ -1,8 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -39,6 +37,7 @@ model Activity {
   day              Day      @relation(fields: [dayId], references: [id], onDelete: Cascade)
   recommendedStart Int?     // hour 0–23
   recommendedEnd   Int?     // hour 0–23
+  durationMinutes  Int      @default(60)
   reason           String?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
@@ -55,7 +54,6 @@ model Calculation {
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 }
-
 
 model User {
   id        Int      @id @default(autoincrement())
@@ -74,6 +72,7 @@ model Product {
   protectionScore Int
   imageUrl        String?
   description     String?
+  active          Int      @default(1)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }

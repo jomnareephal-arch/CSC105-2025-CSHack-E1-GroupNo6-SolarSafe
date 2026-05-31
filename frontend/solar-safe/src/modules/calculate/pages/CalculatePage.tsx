@@ -36,12 +36,25 @@ interface CalculatePageProps {
   selectedProducts: Map<ProductCategory, Product>
   onNavigateToProductForCategory: (category: ProductCategory) => void
   onClearSelectedProducts: () => void
+  skinType: SkinType | null
+  onSkinTypeChange: (v: SkinType) => void
+  timeSlot: TimeSlot | null
+  onTimeSlotChange: (v: TimeSlot) => void
+  noneSelected: boolean
+  onNoneSelectedChange: (v: boolean) => void
 }
 
-export default function CalculatePage({ selectedProducts, onNavigateToProductForCategory, onClearSelectedProducts }: CalculatePageProps) {
-  const [skinType,     setSkinType]     = useState<SkinType | null>(null)
-  const [timeSlot,     setTimeSlot]     = useState<TimeSlot | null>(null)
-  const [noneSelected, setNoneSelected] = useState(false)
+export default function CalculatePage({
+  selectedProducts,
+  onNavigateToProductForCategory,
+  onClearSelectedProducts,
+  skinType,
+  onSkinTypeChange,
+  timeSlot,
+  onTimeSlotChange,
+  noneSelected,
+  onNoneSelectedChange,
+}: CalculatePageProps) {
   const [safeMin,      setSafeMin]      = useState(0)
   const [loading,      setLoading]      = useState(false)
   const [protConfig,   setProtConfig]   = useState<ProtectionConfigItem[]>(DEFAULT_PROT_CONFIG)
@@ -121,38 +134,38 @@ export default function CalculatePage({ selectedProducts, onNavigateToProductFor
   }, [running, showNotif])
 
   function handleChoose(type: ProtectionItemType) {
-    setNoneSelected(false)
+    onNoneSelectedChange(false)
     const category = PROT_TO_CATEGORY[type]
     onNavigateToProductForCategory(category)
   }
 
-  // Reset noneSelected when a product gets selected externally (returned from product page)
+  // Clear noneSelected when a product gets selected externally (returned from product page)
   useEffect(() => {
-    if (selectedProducts.size > 0) setNoneSelected(false)
+    if (selectedProducts.size > 0) onNoneSelectedChange(false)
   }, [selectedProducts])
 
   function selectNone() {
-    setNoneSelected(true)
+    onNoneSelectedChange(true)
     onClearSelectedProducts()
   }
 
   return (
-    <div className="min-h-screen p-4 md:p-10">
+    <div className="min-h-screen p-4 md:p-8">
       {notif && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-red-700 text-white px-6 py-3 rounded-2xl font-bold shadow-2xl text-sm">
           {notif}
         </div>
       )}
 
-      <h1 className="text-3xl md:text-5xl font-bold text-amber-950 mb-5 md:mb-7">
+      <h1 className="text-3xl md:text-4xl font-bold text-amber-950 mb-5 md:mb-6">
         Sun Safety Calculate
       </h1>
 
       <div className="grid grid-cols-2 gap-5 items-start max-[620px]:grid-cols-1">
-        <SkinTypeSelector value={skinType} onChange={setSkinType} />
+        <SkinTypeSelector value={skinType} onChange={onSkinTypeChange} />
 
         <section className="flex flex-col gap-3">
-          <TimeSlotSelector value={timeSlot} onChange={setTimeSlot} />
+          <TimeSlotSelector value={timeSlot} onChange={onTimeSlotChange} />
           <ProtectionSelector
             config={protConfig}
             selectedProducts={selectedProducts}

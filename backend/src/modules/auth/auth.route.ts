@@ -6,59 +6,15 @@ import { prisma } from '../../db.js'
 const router = Router()
 const JWT_SECRET = process.env.JWT_SECRET || 'solarsafe-secret-key'
 
-// ── Raw SQL helpers (User model was added after prisma generate) ──────────────
-type UserRow = { id: number; username: string; password: string; role: string }
-
-async function findUserByUsername(username: string): Promise<UserRow | null> {
-  const rows = await prisma.$queryRawUnsafe<UserRow[]>(
-    'SELECT id, username, password, role FROM "User" WHERE username = ? LIMIT 1',
-    username
-  )
-  return rows[0] ?? null
-}
-
-async function findUserById(id: number): Promise<UserRow | null> {
-  const rows = await prisma.$queryRawUnsafe<UserRow[]>(
-    'SELECT id, username, password, role FROM "User" WHERE id = ? LIMIT 1',
-    id
-  )
-  return rows[0] ?? null
-}
-
-async function createUser(username: string, hashedPassword: string, role: string): Promise<UserRow> {
-  await prisma.$executeRawUnsafe(
-    'INSERT INTO "User" (username, password, role, createdAt, updatedAt) VALUES (?, ?, ?, datetime(\'now\'), datetime(\'now\'))',
-    username,
-    hashedPassword,
-    role
-  )
-  const rows = await prisma.$queryRawUnsafe<UserRow[]>(
-    'SELECT id, username, password, role FROM "User" WHERE username = ? LIMIT 1',
-    username
-  )
-  return rows[0]
-}
-
-async function updatePassword(id: number, hashedPassword: string): Promise<void> {
-  await prisma.$executeRawUnsafe(
-    'UPDATE "User" SET password = ?, updatedAt = datetime(\'now\') WHERE id = ?',
-    hashedPassword,
-    id
-  )
-}
-
 // ── Middleware: verify JWT ────────────────────────────────────────────────────
 export function authMiddleware(req: Request, res: Response, next: Function) {
   const token = req.headers.authorization?.split(' ')[1]
-  if (!token) {
-    res.status(401).json({ error: 'No token provided' })
-    return
-  }
+  if (!token) { res.status(401).json({ error: 'No token provided' }); return }
   try {
     const payload = jwt.verify(token, JWT_SECRET) as { userId: number; username: string; role: string }
-    ;(req as any).userId = payload.userId
+    ;(req as any).userId   = payload.userId
     ;(req as any).username = payload.username
-    ;(req as any).role = payload.role
+    ;(req as any).role     = payload.role
     next()
   } catch {
     res.status(401).json({ error: 'Invalid token' })
@@ -68,8 +24,7 @@ export function authMiddleware(req: Request, res: Response, next: Function) {
 export function adminMiddleware(req: Request, res: Response, next: Function) {
   authMiddleware(req, res, () => {
     if ((req as any).role !== 'admin') {
-      res.status(403).json({ error: 'Admin access required' })
-      return
+      res.status(403).json({ error: 'Admin access required' }); return
     }
     next()
   })
@@ -77,24 +32,14 @@ export function adminMiddleware(req: Request, res: Response, next: Function) {
 
 // ── POST /api/auth/signup ─────────────────────────────────────────────────────
 router.post('/signup', async (req: Request, res: Response) => {
-  const { username, password, role } = req.body
-  if (!username || !password) {
-    res.status(400).json({ error: 'Username and password are required' })
-    return
-  }
-  if (password.length < 6) {
-    res.status(400).json({ error: 'Password must be at least 6 characters' })
-    return
-  }
-  const userRole = role === 'admin' ? 'admin' : 'user'
+  const { username, password } = req.body
+  if (!username || !password) { res.status(400).json({ error: 'Username and password are required' }); return }
+  if (password.length < 6)    { res.status(400).json({ error: 'Password must be at least 6 characters' }); return }
   try {
-    const existing = await findUserByUsername(username)
-    if (existing) {
-      res.status(409).json({ error: 'Username already taken' })
-      return
-    }
+    const existing = await prisma.user.findUnique({ where: { username } })
+    if (existing) { res.status(409).json({ error: 'Username already taken' }); return }
     const hashed = await bcrypt.hash(password, 10)
-    const user = await createUser(username, hashed, userRole)
+    const user = await prisma.user.create({ data: { username, password: hashed, role: 'user' } })
     const token = jwt.sign({ userId: user.id, username: user.username, role: user.role }, JWT_SECRET, { expiresIn: '7d' })
     res.status(201).json({ token, username: user.username, role: user.role })
   } catch (err: any) {
@@ -105,21 +50,12 @@ router.post('/signup', async (req: Request, res: Response) => {
 // ── POST /api/auth/signin ─────────────────────────────────────────────────────
 router.post('/signin', async (req: Request, res: Response) => {
   const { username, password } = req.body
-  if (!username || !password) {
-    res.status(400).json({ error: 'Username and password are required' })
-    return
-  }
+  if (!username || !password) { res.status(400).json({ error: 'Username and password are required' }); return }
   try {
-    const user = await findUserByUsername(username)
-    if (!user) {
-      res.status(401).json({ error: 'Invalid username or password' })
-      return
-    }
+    const user = await prisma.user.findUnique({ where: { username } })
+    if (!user) { res.status(401).json({ error: 'Invalid username or password' }); return }
     const valid = await bcrypt.compare(password, user.password)
-    if (!valid) {
-      res.status(401).json({ error: 'Invalid username or password' })
-      return
-    }
+    if (!valid) { res.status(401).json({ error: 'Invalid username or password' }); return }
     const token = jwt.sign({ userId: user.id, username: user.username, role: user.role }, JWT_SECRET, { expiresIn: '7d' })
     res.json({ token, username: user.username, role: user.role })
   } catch (err: any) {
@@ -135,31 +71,16 @@ router.get('/me', authMiddleware, (req: Request, res: Response) => {
 // ── PUT /api/auth/change-password ─────────────────────────────────────────────
 router.put('/change-password', authMiddleware, async (req: Request, res: Response) => {
   const { currentPassword, newPassword, confirmPassword } = req.body
-  if (!currentPassword || !newPassword || !confirmPassword) {
-    res.status(400).json({ error: 'All fields are required' })
-    return
-  }
-  if (newPassword !== confirmPassword) {
-    res.status(400).json({ error: 'New passwords do not match' })
-    return
-  }
-  if (newPassword.length < 6) {
-    res.status(400).json({ error: 'New password must be at least 6 characters' })
-    return
-  }
+  if (!currentPassword || !newPassword || !confirmPassword) { res.status(400).json({ error: 'All fields are required' }); return }
+  if (newPassword !== confirmPassword) { res.status(400).json({ error: 'New passwords do not match' }); return }
+  if (newPassword.length < 6) { res.status(400).json({ error: 'New password must be at least 6 characters' }); return }
   try {
-    const user = await findUserById((req as any).userId)
-    if (!user) {
-      res.status(404).json({ error: 'User not found' })
-      return
-    }
+    const user = await prisma.user.findUnique({ where: { id: (req as any).userId } })
+    if (!user) { res.status(404).json({ error: 'User not found' }); return }
     const valid = await bcrypt.compare(currentPassword, user.password)
-    if (!valid) {
-      res.status(401).json({ error: 'Current password is incorrect' })
-      return
-    }
+    if (!valid) { res.status(401).json({ error: 'Current password is incorrect' }); return }
     const hashed = await bcrypt.hash(newPassword, 10)
-    await updatePassword(user.id, hashed)
+    await prisma.user.update({ where: { id: user.id }, data: { password: hashed } })
     res.json({ message: 'Password changed successfully' })
   } catch (err: any) {
     res.status(500).json({ error: err.message })

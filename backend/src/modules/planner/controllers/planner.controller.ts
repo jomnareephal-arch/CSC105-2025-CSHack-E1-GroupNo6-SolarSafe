@@ -44,7 +44,10 @@ export async function addActivity(req: Request, res: Response, next: NextFunctio
     return;
   }
   try {
-    const result = await createActivity(todayId(), parsed.data.name.trim());
+    const result = await createActivity(todayId(), parsed.data.name.trim(), {
+      startHour:       parsed.data.startHour,
+      durationMinutes: parsed.data.durationMinutes,
+    });
     res.status(201).json(result);
   } catch (err) {
     next(err);
