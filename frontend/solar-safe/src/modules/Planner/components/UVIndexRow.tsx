@@ -1,22 +1,20 @@
 import type { UVHour } from "../apis/plannerApi";
 
-function uvBoxColors(level: string): { bg: string; color: string } {
-  switch (level) {
-    case "night":    return { bg: "#bbf7d0", color: "#166534" };
-    case "low":      return { bg: "#fef08a", color: "#713f12" };
-    case "moderate": return { bg: "#fdba74", color: "#7c2d12" };
-    case "high":     return { bg: "#f87171", color: "#fff" };
-    case "vhigh":    return { bg: "#b91c1c", color: "#fff" };
-    default:         return { bg: "#bbf7d0", color: "#166534" };
-  }
+function uvBoxColors(uv: number): { bg: string; color: string } {
+  if (uv === 0)  return { bg: "#22C55E", color: "#fff" };
+  if (uv <= 10)  return { bg: "#22C55E", color: "#fff" };
+  if (uv <= 20)  return { bg: "#EAB308", color: "#fff" };
+  if (uv <= 30)  return { bg: "#F97316", color: "#fff" };
+  if (uv <= 40)  return { bg: "#EF4444", color: "#fff" };
+  return           { bg: "#9333EA", color: "#fff" };
 }
 
 const LEGEND = [
-  { label: "Night (0)",        bg: "#bbf7d0", border: "#86efac" },
-  { label: "Low (20-26)",      bg: "#fef08a", border: "#fde047" },
-  { label: "Moderate (27-35)", bg: "#fdba74", border: "#fb923c" },
-  { label: "High (36-49)",     bg: "#f87171", border: "#ef4444" },
-  { label: "Very High (50+)",  bg: "#b91c1c", border: "#991b1b" },
+  { label: "0–10 Low",        bg: "#22C55E", border: "#16A34A" },
+  { label: "11–20 Moderate",  bg: "#EAB308", border: "#CA8A04" },
+  { label: "21–30 High",      bg: "#F97316", border: "#EA580C" },
+  { label: "31–40 Very High", bg: "#EF4444", border: "#DC2626" },
+  { label: "41+ Extreme",     bg: "#9333EA", border: "#7E22CE" },
 ];
 
 interface Props {
@@ -38,7 +36,7 @@ export default function UVIndexRow({ uvData }: Props) {
       <div className="overflow-x-auto pb-2">
         <div className="flex gap-1 md:gap-1.5" style={{ minWidth: "max-content" }}>
           {uvData.map((h) => {
-            const { bg, color } = uvBoxColors(h.level);
+            const { bg, color } = uvBoxColors(h.uv);
             return (
               <div key={h.hour}
                 className="flex flex-col items-center justify-center rounded-xl py-2 px-1 w-[52px] md:w-[68px] shadow-sm"

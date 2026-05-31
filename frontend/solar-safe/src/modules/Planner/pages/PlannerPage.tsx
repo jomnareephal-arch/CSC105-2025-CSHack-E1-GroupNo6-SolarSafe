@@ -28,12 +28,20 @@ export default function PlannerPage() {
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
+  const fetchUV = () => {
     plannerApi.getUVToday().then((d) => setUvData(d.uvData)).catch(() => {});
+  };
+
+  useEffect(() => {
+    fetchUV();
     plannerApi.getActivities().then((d) => {
       setActivities(d.activities);
       setEquipment(d.equipment);
     }).catch(() => {});
+
+    const onVisible = () => { if (document.visibilityState === "visible") fetchUV(); };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
   }, []);
 
   const handleAdd = async () => {
