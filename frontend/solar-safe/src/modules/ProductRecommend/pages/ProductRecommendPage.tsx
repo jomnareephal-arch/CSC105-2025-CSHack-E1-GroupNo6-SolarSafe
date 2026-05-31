@@ -10,7 +10,7 @@ import type { Product, ProductCategory, ProductFilter } from "../types/productRe
 const DEFAULT_FILTER: ProductFilter = {
   category: "hats",
   priceRanges: [],
-  minProtectionScore: 50,
+  minProtectionScore: 0,
 };
 
 function applyFilters(products: Product[], filter: ProductFilter): Product[] {

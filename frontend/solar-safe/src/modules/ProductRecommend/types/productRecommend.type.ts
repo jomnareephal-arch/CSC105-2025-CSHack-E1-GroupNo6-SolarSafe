@@ -37,7 +37,7 @@ export interface Product {
   price: number;            // Baht (฿)
   imageUrl: string;
   rating: ProtectionRating; // UPF | SPF | UV badge
-  protectionScore: number;  // 50–120, matches filter slider range
+  protectionScore: number;  // 0–100, matches filter slider range
   description?: string;
 }
 

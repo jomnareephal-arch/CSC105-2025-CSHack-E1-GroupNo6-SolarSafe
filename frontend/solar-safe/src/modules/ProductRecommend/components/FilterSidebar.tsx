@@ -6,8 +6,8 @@ export const PRICE_RANGE_OPTIONS: PriceRangeOption[] = [
   { id: "above-300", label: "Above 300 Baht",  min: 300, max: null },
 ];
 
-const SCORE_MIN  = 50;
-const SCORE_MAX  = 120;
+const SCORE_MIN  = 0;
+const SCORE_MAX  = 100;
 const SCORE_STEP = 10;
 
 // Slider with a floating circle showing the current value above the thumb.
@@ -68,7 +68,7 @@ export default function FilterSidebar({ filter, onChange }: FilterSidebarProps) 
   };
 
   const handleScore = (raw: number) => {
-    const snapped = Math.round((raw - SCORE_MIN) / SCORE_STEP) * SCORE_STEP + SCORE_MIN;
+    const snapped = Math.round(raw / SCORE_STEP) * SCORE_STEP;
     onChange({
       ...filter,
       minProtectionScore: Math.min(Math.max(snapped, SCORE_MIN), SCORE_MAX),
