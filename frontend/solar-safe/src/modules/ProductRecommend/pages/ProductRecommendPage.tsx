@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { getProducts } from "../apis/productRecommend.api";
-import CategoryTabs from "../components/CategoryTabs";
+import CategoryTabs, { CATEGORY_TABS } from "../components/CategoryTabs";
 import DailyTipCard from "../components/DailyTipCard";
 import FilterSidebar, { PRICE_RANGE_OPTIONS } from "../components/FilterSidebar";
 import ProductGrid from "../components/ProductGrid";
-import type { LoadoutItem, Product, ProductFilter } from "../types/productRecommend.type";
+import type { Product, ProductCategory, ProductFilter } from "../types/productRecommend.type";
 
 const DEFAULT_FILTER: ProductFilter = {
   category: "hats",
@@ -28,14 +28,35 @@ function applyFilters(products: Product[], filter: ProductFilter): Product[] {
   });
 }
 
-export default function ProductRecommendPage() {
+interface ProductRecommendPageProps {
+  selectedProducts: Map<ProductCategory, Product>;
+  onSelectProduct: (product: Product) => void;
+  initialCategory?: ProductCategory;
+  returnToCalculate?: boolean;
+  onDone?: () => void;
+}
+
+export default function ProductRecommendPage({
+  selectedProducts,
+  onSelectProduct,
+  initialCategory,
+  returnToCalculate = false,
+  onDone,
+}: ProductRecommendPageProps) {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loading, setLoading]         = useState(false);
   const [error, setError]             = useState<string | null>(null);
-  const [filter, setFilter]           = useState<ProductFilter>(DEFAULT_FILTER);
-  const [loadout, setLoadout]         = useState<LoadoutItem[]>([]);
+  const [filter, setFilter]           = useState<ProductFilter>({
+    ...DEFAULT_FILTER,
+    category: initialCategory ?? "hats",
+  });
 
-  // Fetch when category changes
+  useEffect(() => {
+    if (initialCategory) {
+      setFilter((prev) => ({ ...prev, category: initialCategory }));
+    }
+  }, [initialCategory]);
+
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
@@ -49,7 +70,6 @@ export default function ProductRecommendPage() {
     return () => { cancelled = true; };
   }, [filter.category]);
 
-  // Instant client-side filter (price + score)
   const visibleProducts = useMemo(
     () => applyFilters(allProducts, filter),
     [allProducts, filter]
@@ -66,27 +86,63 @@ export default function ProductRecommendPage() {
     []
   );
 
-  // Add to loadout — increment qty if already present
-  const handleAdd = useCallback((product: Product) => {
-    setLoadout((prev) => {
-      const existing = prev.find((i) => i.product.id === product.id);
-      if (existing) {
-        return prev.map((i) =>
-          i.product.id === product.id ? { ...i, quantity: i.quantity + 1 } : i
-        );
-      }
-      return [...prev, { product, quantity: 1 }];
-    });
-  }, []);
+  const handleSelect = useCallback((product: Product) => {
+    onSelectProduct(product);
+  }, [onSelectProduct]);
+
+  const selectedInCurrentCategory = selectedProducts.get(filter.category);
 
   return (
     <div className="min-h-full p-6">
-      {/* Page title */}
-      <h1 className="mb-5 text-3xl font-bold text-gray-800">
-        Product Recommendation
-      </h1>
+      {/* Header */}
+      <div className="mb-5 flex items-center justify-between">
+        <h1 className="text-3xl font-bold text-gray-800">
+          Product Recommendation
+        </h1>
+        {returnToCalculate && onDone && (
+          <button
+            onClick={onDone}
+            className="rounded-xl px-4 py-2 text-sm font-semibold text-white shadow transition-all active:scale-95"
+            style={{ backgroundColor: "#E68C52" }}
+          >
+            ← Back to Calculate
+          </button>
+        )}
+      </div>
 
-      {/* Category tabs — flex-1 fills full width */}
+      {/* Selection summary bar */}
+      {selectedProducts.size > 0 && (
+        <div className="mb-4 rounded-xl border border-orange-100 bg-orange-50 px-4 py-3">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-orange-700">
+            Selected Items
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {CATEGORY_TABS.map((tab) => {
+              const sel = selectedProducts.get(tab.value);
+              return (
+                <div
+                  key={tab.value}
+                  className="flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium"
+                  style={{
+                    backgroundColor: sel ? "#fff7ed" : "#f3f4f6",
+                    border: sel ? "1px solid #fb923c" : "1px solid #e5e7eb",
+                    color: sel ? "#c2410c" : "#9ca3af",
+                  }}
+                >
+                  <span>{tab.label}:</span>
+                  {sel ? (
+                    <span className="font-semibold line-clamp-1 max-w-[120px]">{sel.name}</span>
+                  ) : (
+                    <span className="italic">Not selected</span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Category tabs */}
       <div className="mb-5">
         <CategoryTabs active={filter.category} onChange={handleCategoryChange} />
       </div>
@@ -105,21 +161,29 @@ export default function ProductRecommendPage() {
           <FilterSidebar filter={filter} onChange={handleFilterChange} />
           <DailyTipCard />
 
-          {/* Loadout preview (Member 2 will own the full version) */}
-          {loadout.length > 0 && (
-            <div className="rounded-2xl border border-gray-100 bg-white/90 p-3 shadow-sm">
-              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
-                Protection Loadout ({loadout.reduce((s, i) => s + i.quantity, 0)})
-              </h3>
-              <ul className="flex flex-col gap-1">
-                {loadout.map((item) => (
-                  <li key={item.product.id} className="flex items-center justify-between text-xs text-gray-700">
-                    <span className="line-clamp-1 flex-1">{item.product.name}</span>
-                    <span className="ml-1 rounded-full bg-orange-100 px-1.5 py-0.5 text-orange-600">
-                      x{item.quantity}
-                    </span>
-                  </li>
-                ))}
+          {/* All selected products */}
+          {selectedProducts.size > 0 && (
+            <div className="rounded-2xl border border-orange-200 bg-orange-50 p-3 shadow-sm">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-orange-700">
+                All Selections
+              </p>
+              <ul className="flex flex-col gap-2">
+                {CATEGORY_TABS.map((tab) => {
+                  const sel = selectedProducts.get(tab.value);
+                  return (
+                    <li key={tab.value} className="flex flex-col">
+                      <span className="text-[10px] font-bold uppercase text-gray-400">{tab.label}</span>
+                      {sel ? (
+                        <>
+                          <span className="text-xs text-gray-700 font-medium line-clamp-1">{sel.name}</span>
+                          <span className="text-xs text-orange-600 font-bold">{sel.price} ฿</span>
+                        </>
+                      ) : (
+                        <span className="text-xs text-gray-400 italic">Not selected</span>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           )}
@@ -130,9 +194,19 @@ export default function ProductRecommendPage() {
           {!loading && (
             <p className="mb-3 text-xs text-gray-500">
               Showing {visibleProducts.length} item{visibleProducts.length !== 1 ? "s" : ""}
+              {selectedInCurrentCategory && (
+                <span className="ml-2 text-orange-600 font-medium">
+                  · Selected: {selectedInCurrentCategory.name}
+                </span>
+              )}
             </p>
           )}
-          <ProductGrid products={visibleProducts} onAdd={handleAdd} loading={loading} />
+          <ProductGrid
+            products={visibleProducts}
+            selectedProductId={selectedInCurrentCategory?.id}
+            onSelect={handleSelect}
+            loading={loading}
+          />
         </div>
       </div>
     </div>

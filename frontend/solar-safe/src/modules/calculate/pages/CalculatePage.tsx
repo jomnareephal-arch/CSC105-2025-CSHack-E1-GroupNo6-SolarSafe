@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { fetchProtectionConfig, createCalculation, updateCalculation } from '../apis/calculate.api'
 import type { SkinType, TimeSlot, ProtectionItemType, ProtectionConfigItem, ProtectionComponent } from '../types/calculate.types'
+import type { Product, ProductCategory } from '../../ProductRecommend/types/productRecommend.type'
 import SkinTypeSelector from '../components/SkinTypeSelector'
 import TimeSlotSelector from '../components/TimeSlotSelector'
-import ProtectionSelector from '../components/ProtectionSelector'
+import ProtectionSelector, { PROT_TO_CATEGORY } from '../components/ProtectionSelector'
 import SafeTimeDisplay from '../components/SafeTimeDisplay'
 
 const DEFAULT_PROT_CONFIG: ProtectionConfigItem[] = [
@@ -14,31 +15,40 @@ const DEFAULT_PROT_CONFIG: ProtectionConfigItem[] = [
   { type: 'sunglasses', label: 'Sunglasses', icon: '🕶️', field: 'glass_factor'   },
 ]
 
-const MOCK_PROTECTION_VALUES: Record<ProtectionItemType, number> = {
-  sunscreen: 50, uvJacket: 30, hat: 70, umbrella: 80, sunglasses: 60,
-}
-
 function buildComponents(
-  selectedValues: Map<ProtectionItemType, number>,
+  selectedProducts: Map<ProductCategory, Product>,
   config: ProtectionConfigItem[]
 ): ProtectionComponent[] {
   return config
-    .filter(item => selectedValues.has(item.type))
-    .map(item => ({ type: item.type, [item.field]: selectedValues.get(item.type) } as unknown as ProtectionComponent))
+    .filter(item => {
+      const category = PROT_TO_CATEGORY[item.type as ProtectionItemType]
+      return selectedProducts.has(category)
+    })
+    .map(item => {
+      const category = PROT_TO_CATEGORY[item.type as ProtectionItemType]
+      const product = selectedProducts.get(category)!
+      const value = product.rating.value
+      return { type: item.type, [item.field]: value } as unknown as ProtectionComponent
+    })
 }
 
-export default function CalculatePage() {
-  const [skinType,       setSkinType]       = useState<SkinType | null>(null)
-  const [timeSlot,       setTimeSlot]       = useState<TimeSlot | null>(null)
-  const [selectedValues, setSelectedValues] = useState<Map<ProtectionItemType, number>>(new Map())
-  const [noneSelected,   setNoneSelected]   = useState(false)
-  const [safeMin,        setSafeMin]        = useState(0)
-  const [loading,        setLoading]        = useState(false)
-  const [protConfig,     setProtConfig]     = useState<ProtectionConfigItem[]>(DEFAULT_PROT_CONFIG)
-  const [secs,           setSecs]           = useState(0)
-  const [running,        setRunning]        = useState(false)
-  const [notif,          setNotif]          = useState<string | null>(null)
-  const [,               setWarned]         = useState<Set<number>>(new Set())
+interface CalculatePageProps {
+  selectedProducts: Map<ProductCategory, Product>
+  onNavigateToProductForCategory: (category: ProductCategory) => void
+  onClearSelectedProducts: () => void
+}
+
+export default function CalculatePage({ selectedProducts, onNavigateToProductForCategory, onClearSelectedProducts }: CalculatePageProps) {
+  const [skinType,     setSkinType]     = useState<SkinType | null>(null)
+  const [timeSlot,     setTimeSlot]     = useState<TimeSlot | null>(null)
+  const [noneSelected, setNoneSelected] = useState(false)
+  const [safeMin,      setSafeMin]      = useState(0)
+  const [loading,      setLoading]      = useState(false)
+  const [protConfig,   setProtConfig]   = useState<ProtectionConfigItem[]>(DEFAULT_PROT_CONFIG)
+  const [secs,         setSecs]         = useState(0)
+  const [running,      setRunning]      = useState(false)
+  const [notif,        setNotif]        = useState<string | null>(null)
+  const [,             setWarned]       = useState<Set<number>>(new Set())
   const resultIdRef = useRef<number | null>(null)
   const timerRef    = useRef<ReturnType<typeof setInterval> | null>(null)
 
@@ -54,10 +64,10 @@ export default function CalculatePage() {
   }, [])
 
   useEffect(() => {
-    const hasProtection = noneSelected || selectedValues.size > 0
+    const hasProtection = noneSelected || selectedProducts.size > 0
     if (!skinType || !timeSlot || !hasProtection) return
 
-    const protectionComponents = buildComponents(selectedValues, protConfig)
+    const protectionComponents = buildComponents(selectedProducts, protConfig)
     setLoading(true)
     const id = resultIdRef.current
     const payload = { skinType, outdoorTime: timeSlot, protectionComponents }
@@ -67,7 +77,7 @@ export default function CalculatePage() {
       .then(data => { resultIdRef.current = data.id; applyMins(data.safeOutdoorMinutes) })
       .catch(() => showNotif('⚠️ Cannot connect to server'))
       .finally(() => setLoading(false))
-  }, [skinType, timeSlot, selectedValues, noneSelected, protConfig, showNotif])
+  }, [skinType, timeSlot, selectedProducts, noneSelected, protConfig, showNotif])
 
   function applyMins(mins: number) {
     setSafeMin(mins); stopTimer(); setSecs(mins * 60); setWarned(new Set())
@@ -110,16 +120,21 @@ export default function CalculatePage() {
     return () => { if (timerRef.current) clearInterval(timerRef.current) }
   }, [running, showNotif])
 
-  function toggleItem(type: ProtectionItemType) {
+  function handleChoose(type: ProtectionItemType) {
     setNoneSelected(false)
-    setSelectedValues(prev => {
-      const n = new Map(prev)
-      if (n.has(type)) { n.delete(type) } else { n.set(type, MOCK_PROTECTION_VALUES[type]) }
-      return n
-    })
+    const category = PROT_TO_CATEGORY[type]
+    onNavigateToProductForCategory(category)
   }
 
-  function selectNone() { setNoneSelected(true); setSelectedValues(new Map()) }
+  // Reset noneSelected when a product gets selected externally (returned from product page)
+  useEffect(() => {
+    if (selectedProducts.size > 0) setNoneSelected(false)
+  }, [selectedProducts])
+
+  function selectNone() {
+    setNoneSelected(true)
+    onClearSelectedProducts()
+  }
 
   return (
     <div className="min-h-screen p-4 md:p-10">
@@ -140,9 +155,9 @@ export default function CalculatePage() {
           <TimeSlotSelector value={timeSlot} onChange={setTimeSlot} />
           <ProtectionSelector
             config={protConfig}
-            selectedValues={selectedValues}
+            selectedProducts={selectedProducts}
             noneSelected={noneSelected}
-            onToggle={toggleItem}
+            onChoose={handleChoose}
             onSelectNone={selectNone}
           />
           <SafeTimeDisplay

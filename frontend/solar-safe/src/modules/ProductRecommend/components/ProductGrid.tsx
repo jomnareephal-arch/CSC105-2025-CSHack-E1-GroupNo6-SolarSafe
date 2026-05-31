@@ -3,11 +3,12 @@ import ProductCard from "./ProductCard";
 
 interface ProductGridProps {
   products: Product[];
-  onAdd: (product: Product) => void;
+  selectedProductId?: string;
+  onSelect: (product: Product) => void;
   loading?: boolean;
 }
 
-export default function ProductGrid({ products, onAdd, loading = false }: ProductGridProps) {
+export default function ProductGrid({ products, selectedProductId, onSelect, loading = false }: ProductGridProps) {
   if (loading) {
     return (
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -28,14 +29,14 @@ export default function ProductGrid({ products, onAdd, loading = false }: Produc
   }
 
   return (
-    // Responsive grid:
-    // mobile  (<640px)  → 1 column
-    // sm      (≥640px)  → 2 columns
-    // lg      (≥1024px) → 3 columns
-    // xl      (≥1280px) → 4 columns
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {products.map((product) => (
-        <ProductCard key={product.id} product={product} onAdd={onAdd} />
+        <ProductCard
+          key={product.id}
+          product={product}
+          isSelected={product.id === selectedProductId}
+          onSelect={onSelect}
+        />
       ))}
     </div>
   );

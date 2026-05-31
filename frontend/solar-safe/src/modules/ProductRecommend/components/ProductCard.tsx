@@ -1,4 +1,3 @@
-import { useState } from "react";
 import type { Product, RatingStandard } from "../types/productRecommend.type";
 
 function formatRating(product: Product): string {
@@ -14,28 +13,15 @@ const BADGE_COLOR: Record<RatingStandard, string> = {
 
 interface ProductCardProps {
   product: Product;
-  onAdd: (product: Product) => void;
-  onRemove?: (product: Product) => void;
+  isSelected: boolean;
+  onSelect: (product: Product) => void;
 }
 
-export default function ProductCard({ product, onAdd, onRemove }: ProductCardProps) {
-  const [added, setAdded] = useState(false);
-
-  const handleAdd = () => {
-    if (added) {
-      setAdded(false);
-      onRemove?.(product);
-    } else {
-      setAdded(true);
-      onAdd(product);
-    }
-  };
-
+export default function ProductCard({ product, isSelected, onSelect }: ProductCardProps) {
   return (
     <div
-      className="flex flex-col rounded-2xl bg-white shadow-sm transition-shadow hover:shadow-md
-                 p-2 sm:p-3"
-      style={{ border: "1px solid #f0ece8" }}
+      className="flex flex-col rounded-2xl bg-white shadow-sm transition-shadow hover:shadow-md p-2 sm:p-3"
+      style={{ border: isSelected ? "2px solid #E68C52" : "1px solid #f0ece8" }}
     >
       {/* Image + badge */}
       <div
@@ -48,7 +34,6 @@ export default function ProductCard({ product, onAdd, onRemove }: ProductCardPro
           className="aspect-square w-full object-cover"
           loading="lazy"
         />
-        {/* Badge — smaller on mobile */}
         <span
           className="absolute right-1.5 top-1.5 rounded-full px-1.5 py-0.5
                      text-[10px] font-semibold text-white
@@ -57,37 +42,31 @@ export default function ProductCard({ product, onAdd, onRemove }: ProductCardPro
         >
           {formatRating(product)}
         </span>
+        {isSelected && (
+          <div className="absolute top-1.5 left-1.5 rounded-full bg-green-500 text-white text-[10px] px-1.5 py-0.5 font-semibold">
+            ✓ Selected
+          </div>
+        )}
       </div>
 
-      {/* Name — clamp to 2 lines, scales with card width */}
-      <p
-        className="mb-2 line-clamp-2 leading-snug text-gray-700
-                   text-xs sm:text-sm font-medium"
-      >
+      {/* Name */}
+      <p className="mb-2 line-clamp-2 leading-snug text-gray-700 text-xs sm:text-sm font-medium">
         {product.name}
       </p>
 
-      {/* Price + Add button */}
-      <div className="mt-auto flex items-center justify-between">
-        <span
-          className="font-bold text-base sm:text-lg"
-          style={{ color: "#5F2900" }}
-        >
+      {/* Price + Select button */}
+      <div className="mt-auto flex items-center justify-between gap-2">
+        <span className="font-bold text-base sm:text-lg" style={{ color: "#5F2900" }}>
           {product.price} ฿
         </span>
 
         <button
           type="button"
-          onClick={handleAdd}
-          aria-label={added ? `Remove ${product.name} from loadout` : `Add ${product.name} to loadout`}
-          className="flex items-center justify-center rounded-full text-white shadow transition-all active:scale-95
-                     h-8 w-8 text-lg sm:h-9 sm:w-9 sm:text-xl"
-          style={{
-            backgroundColor: added ? "#7a9e6e" : "#E68C52",
-            cursor: "pointer",
-          }}
+          onClick={() => onSelect(product)}
+          className="rounded-full text-white text-xs font-semibold px-3 py-1.5 shadow transition-all active:scale-95"
+          style={{ backgroundColor: isSelected ? "#7a9e6e" : "#E68C52", cursor: "pointer" }}
         >
-          {added ? "✓" : "+"}
+          {isSelected ? "✓ Selected" : "Select"}
         </button>
       </div>
     </div>
